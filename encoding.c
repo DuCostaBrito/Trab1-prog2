@@ -34,12 +34,8 @@ char *ISO8859ToUTF8(unsigned char *str)
   return utf8;
 }
 
-char *read_file(char *filename)
+char *read_file(FILE *file)
 {
-  FILE *file;
-
-  file = fopen(filename, "r");
-
   // Se a leitura falha, retorna NULL
   if (file == NULL)
     return NULL;

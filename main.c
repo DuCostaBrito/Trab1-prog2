@@ -6,8 +6,8 @@ int main()
     FILE *menotti;
     int i;
     char c;
-    char *filename = "curriculos/curriculo.xml";
-    char *file_contents = read_file(filename);
+    menotti = fopen("curriculos/curriculo.xml", "r");
+    char *file_contents = read_file(menotti);
     printf("%s", ISO8859ToUTF8(file_contents));
     /*if (menotti != NULL){
         //Faz a leitura dos 10 primeiros caracteres do arquivo
