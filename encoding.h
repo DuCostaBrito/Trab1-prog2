@@ -5,6 +5,6 @@
 #include <string.h>
 
 char *ISO8859ToUTF8(unsigned char *str);
-char *read_file(FILE *file);
+unsigned char *read_file(FILE *file);
 
 #endif

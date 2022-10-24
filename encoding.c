@@ -4,25 +4,25 @@
 Funcao que tranforma uma string iso8859-1 em utf8.
 Encontrada em: https://tzaeru.com/bit-ops-and-character-encodings
 */
-char *ISO8859ToUTF8(unsigned char *word)
+char *ISO8859ToUTF8(unsigned char *str)
 {
-  char *utf8 = (char *)malloc(1 + (2 * strlen((char*)word)));
+  char *utf8 = (char *)malloc(1 + (2 * strlen((char*)str)));
 
   int len = 0;
 
   char *c = utf8;
-  for (; *word; ++word)
+  for (; *str; ++str)
   {
-    if (!(*word & 0x80))
+    if (!(*str & 0x80))
     {
-      *c++ = *word;
+      *c++ = *str;
       len++;
     }
     else
     {
-      *c++ = (char)(0xc2 | ((unsigned char)(*word) >> 6));
+      *c++ = (char)(0xc2 | ((unsigned char)(*str) >> 6));
 
-      *c++ = (char)(0xbf & *word);
+      *c++ = (char)(0xbf & *str);
       len += 2;
     }
   }
@@ -34,7 +34,7 @@ char *ISO8859ToUTF8(unsigned char *word)
 /*
 Funcao que le todo o arquivo xml e o aloca seu conteudo em uma string
 */
-char *read_file(FILE *file)
+unsigned char *read_file(FILE *file)
 {
   // Se a leitura falha, retorna NULL
   if (file == NULL)
@@ -50,7 +50,7 @@ char *read_file(FILE *file)
   fseek(file, 0, SEEK_SET);
 
   // Aloca dinamicamente o espaco no qual sera salvo todo o conteudo do texto
-  char *string = malloc(sizeof(char) * (length + 1));
+  unsigned char *string = malloc(sizeof(char) * (length + 1));
 
   char c;
   int i = 0;

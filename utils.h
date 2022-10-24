@@ -5,7 +5,7 @@
 #include <string.h>
 #include <dirent.h>
 #define LINESIZE 80
-#define N_ARCHS 2
+#define N_ARCHS 1
 
 char** list_filename(char* dirname);
 void free_list(char **list, int size);
