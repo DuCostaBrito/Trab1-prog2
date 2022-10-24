@@ -7,6 +7,13 @@
 #define LINESIZE 80
 #define N_ARCHS 1
 
-char** list_filename(char* dirname);
+struct lattes
+{
+    char *all_content; // String contendo todo o arquivo xml
+    
+};
+
+char **list_filename(char *dirname);
 void free_list(char **list, int size);
+
 #endif
