@@ -15,8 +15,6 @@ int main()
 
     /*char *file_contents = read_file(cur_file);
     printf("%s", ISO8859ToUTF8(file_contents));*/
-    free(filenames[0]);
-    free(filenames[1]);
-    free(filenames);
+    free_list(filenames, N_ARCHS);
     return 0;
 }

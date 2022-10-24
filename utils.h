@@ -8,5 +8,5 @@
 #define N_ARCHS 2
 
 char** list_filename(char* dirname);
-
+void free_list(char **list, int size);
 #endif

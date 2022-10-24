@@ -4,11 +4,11 @@
 Retorna uma lista de strings
 Cada string eh o caminho a um determinado curriculo
 */
-char** list_filename(char *dirname)
+char **list_filename(char *dirname)
 {
     // Vetor em que serao armazenados as strings
-    char** filenames;
-    filenames = malloc(sizeof(char*)*(N_ARCHS));
+    char **filenames;
+    filenames = malloc(sizeof(char *) * (N_ARCHS));
 
     DIR *cur_dir;
     struct dirent *entry;
@@ -27,13 +27,23 @@ char** list_filename(char *dirname)
         // Ignorando as entradas dos diretórios . e ..
         if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
         {
-            filenames[i] = malloc(sizeof(char)*LINESIZE);
+            filenames[i] = malloc(sizeof(char) * LINESIZE);
             strcpy(filenames[i], dirname);
-			strcat(filenames[i], "/");
-			strcat(filenames[i], entry->d_name);
+            strcat(filenames[i], "/");
+            strcat(filenames[i], entry->d_name);
             i++;
         }
     }
     closedir(cur_dir);
     return filenames;
+}
+
+void free_list(char **list, int size)
+{
+    int i;
+    for (i = 0; i < size; i++)
+    {
+        free(list[i]);
+    }
+    free(list);
 }
