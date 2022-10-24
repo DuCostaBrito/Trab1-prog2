@@ -4,25 +4,25 @@
 Funcao que tranforma uma string iso8859-1 em utf8.
 Encontrada em: https://tzaeru.com/bit-ops-and-character-encodings
 */
-char *ISO8859ToUTF8(unsigned char *str)
+char *ISO8859ToUTF8(unsigned char *word)
 {
-  char *utf8 = (char *)malloc(1 + (2 * strlen(str)));
+  char *utf8 = (char *)malloc(1 + (2 * strlen((char*)word)));
 
   int len = 0;
 
   char *c = utf8;
-  for (; *str; ++str)
+  for (; *word; ++word)
   {
-    if (!(*str & 0x80))
+    if (!(*word & 0x80))
     {
-      *c++ = *str;
+      *c++ = *word;
       len++;
     }
     else
     {
-      *c++ = (char)(0xc2 | ((unsigned char)(*str) >> 6));
+      *c++ = (char)(0xc2 | ((unsigned char)(*word) >> 6));
 
-      *c++ = (char)(0xbf & *str);
+      *c++ = (char)(0xbf & *word);
       len += 2;
     }
   }

@@ -8,7 +8,7 @@ char** list_filename(char *dirname)
 {
     // Vetor em que serao armazenados as strings
     char** filenames;
-    filenames = malloc(sizeof(char*)*(N_ARCHS - 1));
+    filenames = malloc(sizeof(char*)*(N_ARCHS));
 
     DIR *cur_dir;
     struct dirent *entry;
@@ -22,7 +22,7 @@ char** list_filename(char *dirname)
     int i = 0;
 
     // Loop sobre todos os arquivos de um diretorio
-    while (entry = readdir(cur_dir))
+    while ((entry = readdir(cur_dir)))
     {
         // Ignorando as entradas dos diretórios . e ..
         if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
