@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "encoding.h"
 
 /*
@@ -34,6 +31,9 @@ char *ISO8859ToUTF8(unsigned char *str)
   return utf8;
 }
 
+/*
+Funcao que le todo o arquivo xml e o aloca seu conteudo em uma string
+*/
 char *read_file(FILE *file)
 {
   // Se a leitura falha, retorna NULL

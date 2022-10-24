@@ -1,21 +1,22 @@
 #include <stdio.h>
 #include "encoding.c"
+#include "utils.c"
 
 int main()
 {
-    FILE *menotti;
-    int i;
-    char c;
-    menotti = fopen("curriculos/curriculo.xml", "r");
-    char *file_contents = read_file(menotti);
-    printf("%s", ISO8859ToUTF8(file_contents));
-    /*if (menotti != NULL){
-        //Faz a leitura dos 10 primeiros caracteres do arquivo
-        for (i =0; i < 1000;i++){
-            c = fgetc(menotti);
-            printf("%c",c);
-        }
-        return 0;
-    }*/
+    FILE *cur_file;
+    char *dirname = "curriculos";
+    char **filenames;
+    filenames = list_filename(dirname);
+
+    for (int i = 0; i < N_ARCHS; i++)
+    {
+        printf("%s \n", filenames[i]);
+    }
+
+    /*char *file_contents = read_file(cur_file);
+    printf("%s", ISO8859ToUTF8(file_contents));*/
+    free(filenames[0]);
+    free(filenames);
     return 0;
 }
