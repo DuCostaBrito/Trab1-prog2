@@ -38,7 +38,7 @@ char **list_filename(char *dirname)
     return filenames;
 }
 
-void free_list(char **list, int size)
+void free_list_filenames(char **list, int size)
 {
     int i;
     for (i = 0; i < size; i++)
@@ -46,4 +46,43 @@ void free_list(char **list, int size)
         free(list[i]);
     }
     free(list);
+}
+
+/*
+Funcao que le todo o arquivo xml e o aloca seu conteudo em uma string
+*/
+unsigned char *read_file(FILE *file)
+{
+  // Se a leitura falha, retorna NULL
+  if (file == NULL)
+    return NULL;
+
+  // Move o ponteiro para o final do texto
+  fseek(file, 0, SEEK_END);
+
+  // ftell() devolve a posicao atual do ponteiro que esta no fim do texto
+  int length = ftell(file);
+
+  // Move o ponteiro de volta para o inicio
+  fseek(file, 0, SEEK_SET);
+
+  // Aloca dinamicamente o espaco no qual sera salvo todo o conteudo do texto
+  unsigned char *string = malloc(sizeof(char) * (length + 1));
+
+  char c;
+  int i = 0;
+
+  // Continua lendo caractere por caractere ate o fim
+  while ((c = fgetc(file)) != EOF)
+  {
+    string[i] = c;
+    i++;
+  }
+
+  // Coloca o caractere nulo no fim da string
+  string[i] = '\0';
+
+  fclose(file);
+
+  return string;
 }
