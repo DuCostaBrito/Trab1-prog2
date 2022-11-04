@@ -3,14 +3,14 @@ CFLAGS = -g -Wall -std=c99
 
 .PHONY: all clean
 
-crawler : main.o liblista.o utils.o
-	$(CC) main.o liblista.o utils.o -o crawler
+crawler : main.o libbst.o utils.o
+	$(CC) main.o libbst.o utils.o -o crawler
 
 main.o : main.c 
 	$(CC) $(CFLAGS) -c main.c 
 
-liblista.o : liblista.h liblista.c 
-	$(CC) $(CFLAGS) -c liblista.c 
+libbst.o : libbst.h libbst.c 
+	$(CC) $(CFLAGS) -c libbst.c 
 
 utils.o : utils.h utils.c 
 	$(CC) $(CFLAGS) -c utils.c 
