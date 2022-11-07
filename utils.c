@@ -4,7 +4,7 @@
 Retorna uma lista de strings
 Cada string eh o caminho a um determinado curriculo
 */
-char **list_filename(char *dirname)
+char **list_filename(char *dirname, int* list_size)
 {
     // Vetor em que serao armazenados as strings
     char **filenames;
@@ -34,6 +34,9 @@ char **list_filename(char *dirname)
             i++;
         }
     }
+    //Para nos informar o tamanho da stack criada
+    *list_size = i;
+
     closedir(cur_dir);
     return filenames;
 }

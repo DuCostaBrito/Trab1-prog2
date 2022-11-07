@@ -7,7 +7,7 @@
 #define LINESIZE 80
 #define N_ARCHS 1
 
-char **list_filename(char *dirname);
+char **list_filename(char *dirname, int* list_size);
 void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
 
