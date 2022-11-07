@@ -4,51 +4,51 @@
 Retorna uma lista de strings
 Cada string eh o caminho a um determinado curriculo
 */
-char **list_filename(char *dirname, int* list_size)
+char **list_filename(char *dirname, int *list_size)
 {
-    // Vetor em que serao armazenados as strings
-    char **filenames;
-    filenames = malloc(sizeof(char *) * (N_ARCHS));
+  // Vetor em que serao armazenados as strings
+  char **filenames;
+  filenames = malloc(sizeof(char *) * (N_ARCHS));
 
-    DIR *cur_dir;
-    struct dirent *entry;
-    cur_dir = opendir(dirname);
-    if (!cur_dir)
+  DIR *cur_dir;
+  struct dirent *entry;
+  cur_dir = opendir(dirname);
+  if (!cur_dir)
+  {
+    perror("ERRO ao abrir o diretório");
+    exit(1);
+  }
+  // I vai contar quantas vezes passamos pelo loop abaixo
+  int i = 0;
+
+  // Loop sobre todos os arquivos de um diretorio
+  while ((entry = readdir(cur_dir)))
+  {
+    // Ignorando as entradas dos diretórios . e ..
+    if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
     {
-        perror("ERRO ao abrir o diretório");
-        exit(1);
+      filenames[i] = malloc(sizeof(char) * LINESIZE);
+      strcpy(filenames[i], dirname);
+      strcat(filenames[i], "/");
+      strcat(filenames[i], entry->d_name);
+      i++;
     }
-    // I vai contar quantas vezes passamos pelo loop abaixo
-    int i = 0;
+  }
+  // Para nos informar o tamanho da stack criada
+  *list_size = i;
 
-    // Loop sobre todos os arquivos de um diretorio
-    while ((entry = readdir(cur_dir)))
-    {
-        // Ignorando as entradas dos diretórios . e ..
-        if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
-        {
-            filenames[i] = malloc(sizeof(char) * LINESIZE);
-            strcpy(filenames[i], dirname);
-            strcat(filenames[i], "/");
-            strcat(filenames[i], entry->d_name);
-            i++;
-        }
-    }
-    //Para nos informar o tamanho da stack criada
-    *list_size = i;
-
-    closedir(cur_dir);
-    return filenames;
+  closedir(cur_dir);
+  return filenames;
 }
 
 void free_list_filenames(char **list, int size)
 {
-    int i;
-    for (i = 0; i < size; i++)
-    {
-        free(list[i]);
-    }
-    free(list);
+  int i;
+  for (i = 0; i < size; i++)
+  {
+    free(list[i]);
+  }
+  free(list);
 }
 
 /*
@@ -88,4 +88,13 @@ unsigned char *read_file(FILE *file)
   fclose(file);
 
   return string;
+}
+
+/* Retorna o conteudo de uma lable no arquivo xml */
+char *get_data(char *string)
+{
+  char * data = strstr(string, "NOME-DO-EVENTO");
+  data = strstr(data, "\"");
+  printf("%s \n", data);
+  return data;
 }
