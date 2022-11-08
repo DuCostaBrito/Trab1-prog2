@@ -11,7 +11,7 @@ int main()
 
     cur_file = fopen("curriculos/menotti.xml", "r");
     file_contents = read_file(cur_file);
-    get_data((char*)file_contents);
+    print_data((char*)file_contents, "TITULO-DO-PERIODICO-OU-REVISTA=");
     free(file_contents);
     
     return 0;

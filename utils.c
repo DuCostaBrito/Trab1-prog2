@@ -90,11 +90,42 @@ unsigned char *read_file(FILE *file)
   return string;
 }
 
-/* Retorna o conteudo de uma lable no arquivo xml */
-char *get_data(char *string)
+/* Retorna o conteudo entre as aspas*/
+char *get_inside_lable(char *string)
 {
-  char * data = strstr(string, "NOME-DO-EVENTO");
-  data = strstr(data, "\"");
-  printf("%s \n", data);
+  char *temp = string;
+  int len = 0;
+  int i = 0;
+  temp++;
+  string++;
+  while (temp[0] != '\"')
+  {
+    temp++;
+    len++;
+  }
+  char *data = malloc(sizeof(char) * (len + 1));
+  while (string[0] != '\"')
+  {
+    data[i] = string[0];
+    string++;
+    i++;
+  }
+  data[i] = '\0';
   return data;
+}
+
+/* Retorna o conteudo de uma lable no arquivo xml */
+void print_data(char *string, char *lable)
+{
+  char *text;
+  char *data;
+  text = strstr(string, lable);
+  while (text != NULL)
+  {
+    text = strstr(text, "\"");
+    data = get_inside_lable(text);
+    printf("%s \n", data);
+    free(data);
+    text = strstr(text, lable);
+  }
 }

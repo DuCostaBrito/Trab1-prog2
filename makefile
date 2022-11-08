@@ -3,8 +3,8 @@ CFLAGS = -g -Wall -std=c99
 
 .PHONY: all clean
 
-crawler : main.o libbst.o libstack.o utils.o 
-	$(CC) main.o libbst.o libstack.o utils.o -o crawler
+lattes : main.o libbst.o libstack.o utils.o 
+	$(CC) main.o libbst.o libstack.o utils.o -o lattes
 
 main.o : main.c 
 	$(CC) $(CFLAGS) -c main.c 

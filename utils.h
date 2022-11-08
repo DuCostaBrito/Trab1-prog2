@@ -7,9 +7,10 @@
 #define LINESIZE 80
 #define N_ARCHS 1
 
-char **list_filename(char *dirname, int* list_size);
+char **list_filename(char *dirname, int *list_size);
 void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
-char *get_data(char *string);
+void print_data(char *string, char *lable);
+char *get_inside_lable(char *string);
 
 #endif
