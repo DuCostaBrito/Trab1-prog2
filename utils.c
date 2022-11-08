@@ -1,4 +1,7 @@
 #include "utils.h"
+#include "libbst.h"
+#include "liblist.h"
+#include "libstack.h"
 
 /*
 Retorna uma lista de strings
