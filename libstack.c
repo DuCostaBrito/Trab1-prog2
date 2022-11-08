@@ -1,6 +1,20 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "libstack.h"
+
+author_t *author_cria(char *name)
+{
+    int i;
+    author_t *a = (author_t *)malloc(sizeof(author_t));
+    if (!(a))
+        return NULL; // Confere erro de alocacao
+    a->name = name;
+    /* Inicia os vetores como nulo */
+    for (i = 0; i < 9; i++)
+    {
+        a->periodicos[i] = 0;
+        a->conferencias[i] = 0;
+    }
+    return a;
+}
 
 /*
  * Cria e retorna uma nova stack com capacidade de max_size elementos.
@@ -60,7 +74,7 @@ void stack_imprime(stack_t *stack)
 
     while (i <= stack->top)
     {
-        printf("%s \n", stack->array[i].name);
+        printf("Pesquisador: %s \n", stack->array[i].name);
         printf("     PER     CONF \n");
         printf("A1   %d     %d \n", stack->array[i].periodicos[0], stack->array[i].conferencias[0]);
         printf("A2   %d     %d \n", stack->array[i].periodicos[1], stack->array[i].conferencias[1]);

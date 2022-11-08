@@ -2,13 +2,15 @@
 
 #ifndef _LIBSTACK_H_
 #define _LIBSTACK_H_
+#include <stdio.h>
+#include <stdlib.h>
 
 struct author
 {
     char *name;
-    // A1, A2, A3, A4, B1, B2, B3, B4, C, NC
-    int periodicos[10];
-    int conferencias[10];
+    // A1, A2, A3, A4, B1, B2, B3, B4, C
+    int periodicos[9];
+    int conferencias[9];
 };
 typedef struct author author_t;
 
