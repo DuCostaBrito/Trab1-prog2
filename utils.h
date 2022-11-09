@@ -12,6 +12,6 @@ void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
 char *get_data(char *string, char *lable, char **pointer);
 char *get_inside_lable(char *string);
-void get_all_data(char *string, char *lable);
+void process_data(char *string);
 
 #endif

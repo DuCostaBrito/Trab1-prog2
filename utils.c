@@ -141,15 +141,18 @@ char *get_data(char *string, char *lable, char **pointer)
   return data; // Lembrar de dar free
 }
 
-void get_all_data(char *string, char *lable)
+void process_data(char *string)
 {
-  char *data;
+  char *date;
+  char *name;
   char *pointer;
-  data = get_data(string, lable, &pointer);
+  date = get_data(string, "ANO-DO-ARTIGO=", &pointer);
   while (pointer != NULL)
   {
-    printf("%s \n", data);
-    free(data);
-    data = get_data(pointer, lable, &pointer);
+    name = get_data(pointer, "TITULO-DO-PERIODICO-OU-REVISTA=", &pointer);
+    printf("%s : %s \n", name, date);
+    free(date);
+    free(name);
+    date = get_data(pointer, "ANO-DO-ARTIGO=", &pointer);
   }
 }
