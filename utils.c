@@ -3,6 +3,28 @@
 #include "liblist.h"
 #include "libstack.h"
 
+/* 
+  Edit distance function.
+  Retirada de: https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C
+*/
+int levenshtein(char *s1, char *s2) {
+    unsigned int s1len, s2len, x, y, lastdiag, olddiag;
+    s1len = strlen(s1);
+    s2len = strlen(s2);
+    unsigned int column[s1len + 1];
+    for (y = 1; y <= s1len; y++)
+        column[y] = y;
+    for (x = 1; x <= s2len; x++) {
+        column[0] = x;
+        for (y = 1, lastdiag = x - 1; y <= s1len; y++) {
+            olddiag = column[y];
+            column[y] = MIN3(column[y] + 1, column[y - 1] + 1, lastdiag + (s1[y-1] == s2[x - 1] ? 0 : 1));
+            lastdiag = olddiag;
+        }
+    }
+    return column[s1len];
+}
+
 /*
 Retorna uma lista de strings
 Cada string eh o caminho a um determinado curriculo
@@ -150,7 +172,7 @@ void process_data(char *string)
   while (pointer != NULL)
   {
     name = get_data(pointer, "TITULO-DO-PERIODICO-OU-REVISTA=", &pointer);
-    printf("%s : %s \n", name, date);
+    find_quali("conferencias.txt", name);
     free(date);
     free(name);
     date = get_data(pointer, "ANO-DO-ARTIGO=", &pointer);
@@ -161,6 +183,8 @@ void find_quali(char *file_path, char *name)
 {
   FILE *arq;
   char line[LINESIZE];
+  
+  char quali[3];
   char ch;
   int i;
 
@@ -184,9 +208,23 @@ void find_quali(char *file_path, char *name)
       ch = fgetc(arq);
     }
     line[i] = '\0';
-    /* Linha Completa */
-    printf("%s \n", line);
+    /* LINHA COMPLETA */
+
+    /* Pegando a qualificacao */
+    quali[0] = line[i - 2];
+    quali[1] = line[i - 1];
+    quali[2] = '\0';
+    line[i - 3] = '\0'; //Deixando so o nome na linha
+    /* TUDO PRONTO PARA COMPARAR */
+    if (levenshtein(line, name) <= 10)
+    {
+      // Atualizando para o nome oficial
+      printf("ACHEI \n");
+      fclose(arq);
+      return;
+    }
     ch = fgetc(arq);
   }
   fclose(arq);
+  return;
 }

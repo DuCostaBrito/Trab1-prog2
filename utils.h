@@ -6,6 +6,7 @@
 #include <dirent.h>
 #define LINESIZE 120
 #define N_ARCHS 1
+#define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 char **list_filename(char *dirname, int *list_size);
 void free_list_filenames(char **list, int size);
