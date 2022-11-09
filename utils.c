@@ -157,31 +157,36 @@ void process_data(char *string)
   }
 }
 
-char *get_quali(char *line)
-{
-  char *ini = line;
-  line++;
-  while (line[0] != '\0')
-  {
-    line++;
-    ini++;
-  }
-  return ini;
-}
-
 void find_quali(char *file_path, char *name)
 {
   FILE *arq;
   char line[LINESIZE];
+  char ch;
+  int i;
 
+  /* Abrindo o arquivo */
   arq = fopen(file_path, "r");
   if (!arq)
   {
     perror("Erro ao abrir arquivo");
     exit(1);
   }
-  /* Tenta ler uma linha */
-  fgets(line, LINESIZE, arq);
-  printf("%s \n", get_quali(line));
+
+  /* Lendo cada linha */
+  ch = fgetc(arq);
+  while (ch != EOF)
+  {
+    i = 0;
+    while (ch != '\n')
+    {
+      line[i] = ch;
+      i++;
+      ch = fgetc(arq);
+    }
+    line[i] = '\0';
+    /* Linha Completa */
+    printf("%s \n", line);
+    ch = fgetc(arq);
+  }
   fclose(arq);
 }

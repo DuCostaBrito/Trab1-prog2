@@ -3,6 +3,7 @@
         "utils.h": "c",
         "stdio.h": "c",
         "dirent.h": "c",
-        "liblist.h": "c"
+        "liblist.h": "c",
+        "string.h": "c"
     }
 }
