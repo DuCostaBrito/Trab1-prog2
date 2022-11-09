@@ -1,3 +1,4 @@
+/* Estrutura de lista para armazenar os artigos */
 #ifndef _LIBlist_t_H
 #define _LIBlist_t_H
 #include <stdio.h>

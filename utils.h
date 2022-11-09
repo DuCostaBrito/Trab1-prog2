@@ -10,7 +10,8 @@
 char **list_filename(char *dirname, int *list_size);
 void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
-void print_data(char *string, char *lable);
+char *get_data(char *string, char *lable, char **pointer);
 char *get_inside_lable(char *string);
+void get_all_data(char *string, char *lable);
 
 #endif

@@ -118,17 +118,38 @@ char *get_inside_lable(char *string)
 }
 
 /* Retorna o conteudo de uma lable no arquivo xml */
-void print_data(char *string, char *lable)
+char *get_data(char *string, char *lable, char **pointer)
 {
   char *text;
   char *data;
+  /* Procurando pela lable */
   text = strstr(string, lable);
-  while (text != NULL)
+
+  /* Testa se foi achado uma lable restante */
+  if (text == NULL)
   {
-    text = strstr(text, "\"");
-    data = get_inside_lable(text);
+    *pointer = NULL;
+    return NULL;
+  }
+
+  /* Movendo o ponteiro ate as aspas */
+  text = strstr(text, "\"");
+  /* Pegando o conteudo entre aspas */
+  data = get_inside_lable(text);
+  /* Mantendo track do endereco em que parei a leitura */
+  *pointer = text;
+  return data; // Lembrar de dar free
+}
+
+void get_all_data(char *string, char *lable)
+{
+  char *data;
+  char *pointer;
+  data = get_data(string, lable, &pointer);
+  while (pointer != NULL)
+  {
     printf("%s \n", data);
     free(data);
-    text = strstr(text, lable);
+    data = get_data(pointer, lable, &pointer);
   }
 }
