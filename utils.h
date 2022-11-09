@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#define LINESIZE 80
+#define LINESIZE 120
 #define N_ARCHS 1
 
 char **list_filename(char *dirname, int *list_size);
@@ -13,5 +13,6 @@ unsigned char *read_file(FILE *file);
 char *get_data(char *string, char *lable, char **pointer);
 char *get_inside_lable(char *string);
 void process_data(char *string);
+void find_quali(char *file_path ,char *name);
 
 #endif

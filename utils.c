@@ -156,3 +156,32 @@ void process_data(char *string)
     date = get_data(pointer, "ANO-DO-ARTIGO=", &pointer);
   }
 }
+
+char *get_quali(char *line)
+{
+  char *ini = line;
+  line++;
+  while (line[0] != '\0')
+  {
+    line++;
+    ini++;
+  }
+  return ini;
+}
+
+void find_quali(char *file_path, char *name)
+{
+  FILE *arq;
+  char line[LINESIZE];
+
+  arq = fopen(file_path, "r");
+  if (!arq)
+  {
+    perror("Erro ao abrir arquivo");
+    exit(1);
+  }
+  /* Tenta ler uma linha */
+  fgets(line, LINESIZE, arq);
+  printf("%s \n", get_quali(line));
+  fclose(arq);
+}
