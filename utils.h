@@ -11,9 +11,10 @@
 char **list_filename(char *dirname, int *list_size);
 void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
-char *get_data(char *string, char *lable, char **pointer);
-char *get_inside_lable(char *string);
-void process_data(char *string);
-void find_quali(char *file_path ,char *name);
+void get_data(char *string, char *lable, char *data, char **pointer);
+char *get_inside_lable(char *string, char *data);
+void process_periodicos(char *string, char *file_path);
+void process_conferencias(char *string, char *file_path);
+void comparing(FILE *arq,char *name, fpos_t *ini);
 
 #endif

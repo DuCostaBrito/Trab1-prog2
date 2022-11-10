@@ -3,26 +3,29 @@
 #include "liblist.h"
 #include "libstack.h"
 
-/* 
+/*
   Edit distance function.
   Retirada de: https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C
 */
-int levenshtein(char *s1, char *s2) {
-    unsigned int s1len, s2len, x, y, lastdiag, olddiag;
-    s1len = strlen(s1);
-    s2len = strlen(s2);
-    unsigned int column[s1len + 1];
-    for (y = 1; y <= s1len; y++)
-        column[y] = y;
-    for (x = 1; x <= s2len; x++) {
-        column[0] = x;
-        for (y = 1, lastdiag = x - 1; y <= s1len; y++) {
-            olddiag = column[y];
-            column[y] = MIN3(column[y] + 1, column[y - 1] + 1, lastdiag + (s1[y-1] == s2[x - 1] ? 0 : 1));
-            lastdiag = olddiag;
-        }
+int levenshtein(char *s1, char *s2)
+{
+  unsigned int s1len, s2len, x, y, lastdiag, olddiag;
+  s1len = strlen(s1);
+  s2len = strlen(s2);
+  unsigned int column[s1len + 1];
+  for (y = 1; y <= s1len; y++)
+    column[y] = y;
+  for (x = 1; x <= s2len; x++)
+  {
+    column[0] = x;
+    for (y = 1, lastdiag = x - 1; y <= s1len; y++)
+    {
+      olddiag = column[y];
+      column[y] = MIN3(column[y] + 1, column[y - 1] + 1, lastdiag + (s1[y - 1] == s2[x - 1] ? 0 : 1));
+      lastdiag = olddiag;
     }
-    return column[s1len];
+  }
+  return column[s1len];
 }
 
 /*
@@ -116,19 +119,10 @@ unsigned char *read_file(FILE *file)
 }
 
 /* Retorna o conteudo entre as aspas*/
-char *get_inside_lable(char *string)
+char *get_inside_lable(char *string, char *data)
 {
-  char *temp = string;
-  int len = 0;
   int i = 0;
-  temp++;
   string++;
-  while (temp[0] != '\"')
-  {
-    temp++;
-    len++;
-  }
-  char *data = malloc(sizeof(char) * (len + 1));
   while (string[0] != '\"')
   {
     data[i] = string[0];
@@ -140,10 +134,9 @@ char *get_inside_lable(char *string)
 }
 
 /* Retorna o conteudo de uma lable no arquivo xml */
-char *get_data(char *string, char *lable, char **pointer)
+void get_data(char *string, char *lable, char *data, char **pointer)
 {
   char *text;
-  char *data;
   /* Procurando pela lable */
   text = strstr(string, lable);
 
@@ -151,52 +144,89 @@ char *get_data(char *string, char *lable, char **pointer)
   if (text == NULL)
   {
     *pointer = NULL;
-    return NULL;
+    return;
   }
 
   /* Movendo o ponteiro ate as aspas */
   text = strstr(text, "\"");
   /* Pegando o conteudo entre aspas */
-  data = get_inside_lable(text);
+  get_inside_lable(text, data);
   /* Mantendo track do endereco em que parei a leitura */
   *pointer = text;
-  return data; // Lembrar de dar free
+  return; // Lembrar de dar free
 }
 
-void process_data(char *string)
+void process_periodicos(char *string, char *file_path)
 {
-  char *date;
-  char *name;
-  char *pointer;
-  date = get_data(string, "ANO-DO-ARTIGO=", &pointer);
-  while (pointer != NULL)
-  {
-    name = get_data(pointer, "TITULO-DO-PERIODICO-OU-REVISTA=", &pointer);
-    find_quali("conferencias.txt", name);
-    free(date);
-    free(name);
-    date = get_data(pointer, "ANO-DO-ARTIGO=", &pointer);
-  }
-}
-
-void find_quali(char *file_path, char *name)
-{
+  printf("++++++++++PERIODICOS+++++++++++++\n");
   FILE *arq;
-  char line[LINESIZE];
-  
-  char quali[3];
-  char ch;
-  int i;
+  fpos_t pos; // Para guardar a posicao do inicio do arquivo
+  char date[5];
+  char name[LINESIZE];
+  char *pointer;
 
-  /* Abrindo o arquivo */
+  // Abrindo o arquivo
   arq = fopen(file_path, "r");
   if (!arq)
   {
     perror("Erro ao abrir arquivo");
     exit(1);
   }
+  fgetpos(arq, &pos);
 
-  /* Lendo cada linha */
+  get_data(string, "ANO-DO-ARTIGO=", date, &pointer);
+  while (pointer != NULL)
+  {
+    get_data(pointer, "TITULO-DO-PERIODICO-OU-REVISTA=", name, &pointer);
+    comparing(arq, name, &pos);
+    get_data(pointer, "ANO-DO-ARTIGO=", date, &pointer);
+  }
+
+  fclose(arq);
+  printf("\n\n");
+  return;
+}
+
+void process_conferencias(char *string, char *file_path)
+{
+  printf("++++++++++CONFERENCIAS+++++++++++++\n");
+  FILE *arq;
+  fpos_t pos; // Para guardar a posicao do inicio do arquivo
+  char date[5];
+  char name[LINESIZE];
+  char *pointer;
+
+  // Abrindo o arquivo
+  arq = fopen(file_path, "r");
+  if (!arq)
+  {
+    perror("Erro ao abrir arquivo");
+    exit(1);
+  }
+  fgetpos(arq, &pos);
+
+  get_data(string, "ANO-DO-TRABALHO=", date, &pointer);
+  while (pointer != NULL)
+  {
+    get_data(pointer, "NOME-DO-EVENTO=", name, &pointer);
+    comparing(arq, name, &pos);
+    get_data(pointer, "ANO-DO-TRABALHO=", date, &pointer);
+  }
+  fclose(arq);
+  printf("\n\n");
+  return;
+}
+/*
+Compara o nome do evento com cada linha.
+Retorna a qualificacao se exite, ou "NC", caso nao exista. (POR REFERENCIA)
+*/
+void comparing(FILE *arq, char *name, fpos_t *ini)
+{
+  char line[LINESIZE];
+  char ch;
+  int i;
+
+  // Lendo cada linha
   ch = fgetc(arq);
   while (ch != EOF)
   {
@@ -208,23 +238,22 @@ void find_quali(char *file_path, char *name)
       ch = fgetc(arq);
     }
     line[i] = '\0';
-    /* LINHA COMPLETA */
+    // LINHA COMPLETA
 
-    /* Pegando a qualificacao */
-    quali[0] = line[i - 2];
-    quali[1] = line[i - 1];
-    quali[2] = '\0';
-    line[i - 3] = '\0'; //Deixando so o nome na linha
-    /* TUDO PRONTO PARA COMPARAR */
-    if (levenshtein(line, name) <= 10)
+    // Pegando a qualificacao
+    line[i - 3] = '\0'; // Deixando so o nome na linha
+
+    // Comparando cada linha com o nome do evento
+    if (levenshtein(line, name) <= 7)
     {
-      // Atualizando para o nome oficial
-      printf("ACHEI \n");
-      fclose(arq);
+      printf("%s : %s \n", line, name);
+      name = line;
+      fsetpos(arq, ini); // Voltando o ponteiro para o inicio
       return;
     }
+
     ch = fgetc(arq);
   }
-  fclose(arq);
-  return;
+  fsetpos(arq, ini); // Voltando o ponteiro para o inicio
+  return;            // NAO CONTEM
 }

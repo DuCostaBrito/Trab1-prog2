@@ -8,7 +8,8 @@ int main()
     unsigned char* file_contents;
     cur_file = fopen("curriculos/menotti.xml", "r");
     file_contents = read_file(cur_file);
-    process_data((char*)file_contents);
+    process_periodicos((char*)file_contents, "periodicos.txt");
+    process_conferencias((char*)file_contents, "conferencias.txt");
     
     free(file_contents);
     
