@@ -67,6 +67,8 @@ int lista_vazia(lista_t *l)
 
 int lista_insere_inicio(lista_t *l, char *name)
 {
+    if (lista_pertence(l, name) == 1)
+        return 1;
     nodo_l_t *novo;
 
     if (!(novo = (nodo_l_t *)malloc(sizeof(nodo_l_t))))
@@ -115,7 +117,7 @@ void lista_imprime(lista_t *l)
     ptr = l->ini->prox;
     while (ptr->prox->prox != NULL)
     {
-        printf("%s: %d ", ptr->name, ptr->number);
+        printf("%s: %d \n", ptr->name, ptr->number);
         ptr = ptr->prox;
     }
     printf("%s: %d \n", ptr->name, ptr->number);

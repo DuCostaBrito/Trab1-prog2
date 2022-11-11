@@ -1,7 +1,6 @@
 #include "utils.h"
 #include "libbst.h"
 #include "liblist.h"
-#include "libstack.h"
 
 /*
   Edit distance function.
@@ -156,17 +155,18 @@ void get_data(char *string, char *lable, char *data, char **pointer)
   return; // Lembrar de dar free
 }
 
-void process_periodicos(char *string, char *file_path)
+void process_event(char *string, char *lable[])
 {
-  printf("++++++++++PERIODICOS+++++++++++++\n");
+  printf("++++++++++%s+++++++++++++\n", lable[0]);
   FILE *arq;
-  fpos_t pos; // Para guardar a posicao do inicio do arquivo
-  char date[5];
-  char name[LINESIZE];
+  fpos_t pos;          // Para guardar a posicao do inicio do arquivo
+  char date[5];        // Para guardar o ano
+  char quali[3];       // Para guardar a qualificacao
+  char name[LINESIZE]; // Para guardar o nome do evento
   char *pointer;
 
   // Abrindo o arquivo
-  arq = fopen(file_path, "r");
+  arq = fopen(lable[3], "r");
   if (!arq)
   {
     perror("Erro ao abrir arquivo");
@@ -174,53 +174,25 @@ void process_periodicos(char *string, char *file_path)
   }
   fgetpos(arq, &pos);
 
-  get_data(string, "ANO-DO-ARTIGO=", date, &pointer);
+  get_data(string, lable[1], date, &pointer);
   while (pointer != NULL)
   {
-    get_data(pointer, "TITULO-DO-PERIODICO-OU-REVISTA=", name, &pointer);
-    comparing(arq, name, &pos);
-    get_data(pointer, "ANO-DO-ARTIGO=", date, &pointer);
+    strcpy(quali, "NC");
+    get_data(pointer, lable[2], name, &pointer);
+    comparing(arq, name, quali, &pos);
+    printf("%s : %s : %s \n", name, date, quali);
+    get_data(pointer, lable[1], date, &pointer);
   }
-
+  printf("\n");
   fclose(arq);
-  printf("\n\n");
   return;
 }
 
-void process_conferencias(char *string, char *file_path)
-{
-  printf("++++++++++CONFERENCIAS+++++++++++++\n");
-  FILE *arq;
-  fpos_t pos; // Para guardar a posicao do inicio do arquivo
-  char date[5];
-  char name[LINESIZE];
-  char *pointer;
-
-  // Abrindo o arquivo
-  arq = fopen(file_path, "r");
-  if (!arq)
-  {
-    perror("Erro ao abrir arquivo");
-    exit(1);
-  }
-  fgetpos(arq, &pos);
-
-  get_data(string, "ANO-DO-TRABALHO=", date, &pointer);
-  while (pointer != NULL)
-  {
-    get_data(pointer, "NOME-DO-EVENTO=", name, &pointer);
-    comparing(arq, name, &pos);
-    get_data(pointer, "ANO-DO-TRABALHO=", date, &pointer);
-  }
-  fclose(arq);
-  printf("\n\n");
-  return;
-}
 /*
 Compara o nome do evento com cada linha.
 Retorna a qualificacao se exite, ou "NC", caso nao exista. (POR REFERENCIA)
 */
-void comparing(FILE *arq, char *name, fpos_t *ini)
+void comparing(FILE *arq, char *name, char *quali, fpos_t *ini)
 {
   char line[LINESIZE];
   char ch;
@@ -240,13 +212,15 @@ void comparing(FILE *arq, char *name, fpos_t *ini)
     line[i] = '\0';
     // LINHA COMPLETA
 
-    // Pegando a qualificacao
     line[i - 3] = '\0'; // Deixando so o nome na linha
 
     // Comparando cada linha com o nome do evento
-    if (levenshtein(line, name) <= 7)
+    if (levenshtein(line, name) <= 10)
     {
-      printf("%s : %s \n", line, name);
+      // Pegando a qualificacao
+      quali[0] = line[i - 2];
+      quali[1] = line[i - 1];
+      quali[2] = '\0';
       name = line;
       fsetpos(arq, ini); // Voltando o ponteiro para o inicio
       return;
@@ -256,4 +230,15 @@ void comparing(FILE *arq, char *name, fpos_t *ini)
   }
   fsetpos(arq, ini); // Voltando o ponteiro para o inicio
   return;            // NAO CONTEM
+}
+
+void process_wrapper(char *string, char *per_path, char *conf_path)
+{
+  /* Vetor de strings contenco as lables a serem procuradas */
+  char *conf_lable[] = {"CONFERENCIAS", "ANO-DO-TRABALHO=", "NOME-DO-EVENTO=", conf_path};
+  char *per_lable[] = {"PERIODICOS", "ANO-DO-ARTIGO=", "TITULO-DO-PERIODICO-OU-REVISTA=", per_path};
+
+  process_event(string, conf_lable);
+  process_event(string, per_lable);
+  return;
 }

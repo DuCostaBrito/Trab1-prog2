@@ -13,8 +13,8 @@ void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
 void get_data(char *string, char *lable, char *data, char **pointer);
 char *get_inside_lable(char *string, char *data);
-void process_periodicos(char *string, char *file_path);
-void process_conferencias(char *string, char *file_path);
-void comparing(FILE *arq,char *name, fpos_t *ini);
+void process_event(char *string, char *lable[]);
+void comparing(FILE *arq,char *name, char *quali,fpos_t *ini);
+void process_wrapper(char *string, char *per_path, char *conf_path);
 
 #endif
