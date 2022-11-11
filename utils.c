@@ -1,7 +1,4 @@
 #include "utils.h"
-#include "libbst.h"
-#include "liblist.h"
-
 /*
   Edit distance function.
   Retirada de: https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C
@@ -117,7 +114,7 @@ unsigned char *read_file(FILE *file)
   return string;
 }
 
-/* Retorna o conteudo entre as aspas*/
+/* Retorna o conteudo entre as aspas */
 char *get_inside_lable(char *string, char *data)
 {
   int i = 0;
@@ -155,15 +152,41 @@ void get_data(char *string, char *lable, char *data, char **pointer)
   return; // Lembrar de dar free
 }
 
-void process_event(char *string, char *lable[])
+/* Acha a index da qualificacao no vetor Estrato*/
+int estrato_index(char *quali)
 {
-  printf("++++++++++%s+++++++++++++\n", lable[0]);
+  if (strcmp(quali, "A1") == 0)
+    return 0;
+  else if (strcmp(quali, "A2") == 0)
+    return 1;
+  else if (strcmp(quali, "A3") == 0)
+    return 2;
+  else if (strcmp(quali, "A4") == 0)
+    return 3;
+  else if (strcmp(quali, "B1") == 0)
+    return 4;
+  else if (strcmp(quali, "B2") == 0)
+    return 5;
+  else if (strcmp(quali, "B3") == 0)
+    return 6;
+  else if (strcmp(quali, "B4") == 0)
+    return 7;
+  else if (strcmp(quali, " C") == 0)
+    return 8;
+  else
+    return 9;
+}
+
+/* Pega o conteudo das lable e compara com outro arquivo para pegar a qualificacao */
+void process_event(char *string, char *lable[], lista_t *estrato[])
+{
   FILE *arq;
   fpos_t pos;          // Para guardar a posicao do inicio do arquivo
   char date[5];        // Para guardar o ano
   char quali[3];       // Para guardar a qualificacao
   char name[LINESIZE]; // Para guardar o nome do evento
   char *pointer;
+  int index;
 
   // Abrindo o arquivo
   arq = fopen(lable[3], "r");
@@ -180,7 +203,8 @@ void process_event(char *string, char *lable[])
     strcpy(quali, "NC");
     get_data(pointer, lable[2], name, &pointer);
     comparing(arq, name, quali, &pos);
-    printf("%s : %s : %s \n", name, date, quali);
+    index = estrato_index(quali);
+    lista_insere_inicio(estrato[index], name);
     get_data(pointer, lable[1], date, &pointer);
   }
   printf("\n");
@@ -232,13 +256,23 @@ void comparing(FILE *arq, char *name, char *quali, fpos_t *ini)
   return;            // NAO CONTEM
 }
 
-void process_wrapper(char *string, char *per_path, char *conf_path)
+void get_lattes_data(char *lattes, char *per_path, char *conf_path)
 {
-  /* Vetor de strings contenco as lables a serem procuradas */
+  int i;
+  /* Vetor de strings contendo as lables a serem procuradas */
   char *conf_lable[] = {"CONFERENCIAS", "ANO-DO-TRABALHO=", "NOME-DO-EVENTO=", conf_path};
   char *per_lable[] = {"PERIODICOS", "ANO-DO-ARTIGO=", "TITULO-DO-PERIODICO-OU-REVISTA=", per_path};
+  
+  lista_t *Estratos[10];
+  for (i = 0; i < 10; i++)
+    Estratos[i] = lista_cria();
 
-  process_event(string, conf_lable);
-  process_event(string, per_lable);
+  process_event(lattes, conf_lable, Estratos);
+
+
+  for (i = 0; i < 10; i++)
+    lista_imprime(Estratos[i], i);
+  for (i = 0; i < 10; i++)
+    lista_destroi(Estratos[i]);
   return;
 }

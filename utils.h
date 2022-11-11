@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include "libbst.h"
+#include "liblist.h"
 #define LINESIZE 120
 #define N_ARCHS 1
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
@@ -13,8 +15,8 @@ void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
 void get_data(char *string, char *lable, char *data, char **pointer);
 char *get_inside_lable(char *string, char *data);
-void process_event(char *string, char *lable[]);
+void process_event(char *string, char *lable[], lista_t *estrato[]);
 void comparing(FILE *arq,char *name, char *quali,fpos_t *ini);
-void process_wrapper(char *string, char *per_path, char *conf_path);
+void get_lattes_data(char *lattes, char *per_path, char *conf_path);
 
 #endif

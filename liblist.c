@@ -74,7 +74,7 @@ int lista_insere_inicio(lista_t *l, char *name)
     if (!(novo = (nodo_l_t *)malloc(sizeof(nodo_l_t))))
         return 0;
 
-    novo->name = name;
+    strcpy(novo->name, name);
     novo->number = 1;
     novo->prox = l->ini->prox;
     l->ini->prox = novo;
@@ -85,7 +85,7 @@ int lista_insere_inicio(lista_t *l, char *name)
 
 /*
  * Retorna 1 se o elemento existe na lista e 0 caso contrario.
-*/
+ */
 int lista_pertence(lista_t *l, char *name)
 {
     nodo_l_t *ptr;
@@ -106,19 +106,42 @@ int lista_pertence(lista_t *l, char *name)
 
     return 0;
 }
-
-void lista_imprime(lista_t *l)
+char *return_quali(int i)
+{
+    if (i == 0)
+        return "A1";
+    else if (i == 1)
+        return "A2";
+    else if (i == 2)
+        return "A3";
+    else if (i == 3)
+        return "A4";
+    else if (i == 4)
+        return "B1";
+    else if (i == 5)
+        return "B2";
+    else if (i == 6)
+        return "B3";
+    else if (i == 7)
+        return "B4";
+    else if (i == 8)
+        return "C";
+    else
+        return "NC";
+}
+void lista_imprime(lista_t *l, int i)
 {
     nodo_l_t *ptr;
 
     if (lista_vazia(l))
         return;
-
+    
+    printf("Estrato %s: \n", return_quali(i));
     ptr = l->ini->prox;
     while (ptr->prox->prox != NULL)
     {
         printf("%s: %d \n", ptr->name, ptr->number);
         ptr = ptr->prox;
     }
-    printf("%s: %d \n", ptr->name, ptr->number);
+    printf("%s: %d \n\n", ptr->name, ptr->number);
 }

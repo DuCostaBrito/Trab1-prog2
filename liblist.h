@@ -6,7 +6,7 @@
 #include <string.h>
 
 struct nodo_l {
-    char *name;
+    char name[120];
     int number;       
     struct nodo_l* prox;  /* ponteiro para o proximo   */
 };
@@ -55,6 +55,6 @@ int lista_pertence (lista_t* l, char *name);
  * Esta funcao eh somente para facilitar teus testes.
  * Normalmente ela nao existe nas implementacoes de um TAD lista.
 */
-void lista_imprime (lista_t* l);
+void lista_imprime (lista_t* l, int i);
 
 #endif
