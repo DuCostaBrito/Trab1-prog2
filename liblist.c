@@ -65,19 +65,57 @@ int lista_vazia(lista_t *l)
     return (lista_tamanho(l) == 0);
 }
 
-int lista_insere_inicio(lista_t *l, char *name)
+int lista_insere_inicio(lista_t *l, char *name, int year)
 {
-    if (lista_pertence(l, name) == 1)
-        return 1;
     nodo_l_t *novo;
 
     if (!(novo = (nodo_l_t *)malloc(sizeof(nodo_l_t))))
         return 0;
 
     strcpy(novo->name, name);
+    novo->year = year;
     novo->number = 1;
     novo->prox = l->ini->prox;
     l->ini->prox = novo;
+    (l->tamanho)++;
+
+    return 1;
+}
+
+int lista_insere_ordenado (lista_t* l, char *name, int year)
+{
+    /* Confere se o elemento ja esta na lista */
+    if (lista_pertence(l, name) == 1)
+        return 1;
+
+    nodo_l_t *novo, *ptr, *prev;
+
+    /* se a lista for vazia insere no inicio */
+    if (lista_vazia (l))
+    {
+        lista_insere_inicio (l, name, year);
+        return 1;
+    }
+
+    if (! (novo = (nodo_l_t *) malloc (sizeof (nodo_l_t))))
+        return 0;
+
+    novo->year = year;
+    strcpy(novo->name, name);
+    novo->number = 1;
+
+    /* acha o lugar para inserir elemento */
+    prev= l->ini;
+    ptr= l->ini->prox;
+    while ((ptr->prox != NULL) && (ptr->year <= year))
+    {
+        ptr= ptr->prox;
+        prev= prev->prox;
+    }
+
+    /* tem que inserir entre prev e ptr */
+    novo->prox= ptr;
+    prev->prox= novo;
     (l->tamanho)++;
 
     return 1;
@@ -101,11 +139,13 @@ int lista_pertence(lista_t *l, char *name)
     if (ptr->prox != NULL)
     {
         ptr->number = ptr->number + 1;
+        l->tamanho++;
         return 1;
     }
 
     return 0;
 }
+
 char *return_quali(int i)
 {
     if (i == 0)
@@ -140,8 +180,8 @@ void lista_imprime(lista_t *l, int i)
     ptr = l->ini->prox;
     while (ptr->prox->prox != NULL)
     {
-        printf("%s: %d \n", ptr->name, ptr->number);
+        printf("%s: %d :%d \n", ptr->name, ptr->year, ptr->number);
         ptr = ptr->prox;
     }
-    printf("%s: %d \n\n", ptr->name, ptr->number);
+    printf("%s: %d :%d \n\n", ptr->name, ptr->year, ptr->number);
 }

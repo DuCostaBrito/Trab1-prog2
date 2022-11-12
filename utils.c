@@ -197,14 +197,22 @@ void process_event(char *string, char *lable[], lista_t *estrato[])
   }
   fgetpos(arq, &pos);
 
+  /* Procurando pela data */
   get_data(string, lable[1], date, &pointer);
   while (pointer != NULL)
   {
     strcpy(quali, "NC");
+    /* Procurando o nome do evento*/
     get_data(pointer, lable[2], name, &pointer);
+
+    /* Procurando pela qualificacao */
     comparing(arq, name, quali, &pos);
+
+    /* Inserindo na lista correspondente */
     index = estrato_index(quali);
-    lista_insere_inicio(estrato[index], name);
+    lista_insere_ordenado(estrato[index], name, atoi(date));
+
+    /* Procuranodo pela data de novo */
     get_data(pointer, lable[1], date, &pointer);
   }
   printf("\n");
@@ -263,16 +271,28 @@ void get_lattes_data(char *lattes, char *per_path, char *conf_path)
   char *conf_lable[] = {"CONFERENCIAS", "ANO-DO-TRABALHO=", "NOME-DO-EVENTO=", conf_path};
   char *per_lable[] = {"PERIODICOS", "ANO-DO-ARTIGO=", "TITULO-DO-PERIODICO-OU-REVISTA=", per_path};
   
-  lista_t *Estratos[10];
+  lista_t *Periodicos[10];
+  lista_t *Conferencias[10];
   for (i = 0; i < 10; i++)
-    Estratos[i] = lista_cria();
+  {
+    Periodicos[i] = lista_cria();
+    Conferencias[i] = lista_cria();
+  }
 
-  process_event(lattes, conf_lable, Estratos);
+
+  process_event(lattes, conf_lable, Conferencias);
+  process_event(lattes, per_lable, Periodicos);
 
 
   for (i = 0; i < 10; i++)
-    lista_imprime(Estratos[i], i);
+    lista_imprime(Periodicos[i], i); 
+  
+  
   for (i = 0; i < 10; i++)
-    lista_destroi(Estratos[i]);
+  {
+    lista_destroi(Periodicos[i]);
+    lista_destroi(Conferencias[i]);
+  }
+
   return;
 }

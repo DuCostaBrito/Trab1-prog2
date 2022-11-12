@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include "libbst.h"
 #include "liblist.h"
 #define LINESIZE 120
 #define N_ARCHS 1

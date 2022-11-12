@@ -7,6 +7,7 @@
 
 struct nodo_l {
     char name[120];
+    int year;
     int number;       
     struct nodo_l* prox;  /* ponteiro para o proximo   */
 };
@@ -42,7 +43,9 @@ int lista_tamanho (lista_t* l);
  * Insere o elemento no inicio da lista.
  * Retorna 1 se a operacao foi bem sucedida e 0 caso contrario.
 */
-int lista_insere_inicio (lista_t* l, char *name);
+int lista_insere_inicio (lista_t* l, char *name, int year);
+
+int lista_insere_ordenado (lista_t* l, char *name, int year);
 
 /*
  * Retorna 1 se o elemento existe na lista e 0 caso contrario.
