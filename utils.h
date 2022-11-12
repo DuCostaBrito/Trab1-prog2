@@ -6,10 +6,9 @@
 #include <dirent.h>
 #include "liblist.h"
 #define LINESIZE 120
-#define N_ARCHS 1
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
-char **list_filename(char *dirname, int *list_size);
+char **list_filename(char *dirname, int *num_arq);
 void free_list_filenames(char **list, int size);
 unsigned char *read_file(FILE *file);
 void get_data(char *string, char *lable, char *data, char **pointer);

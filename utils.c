@@ -24,16 +24,32 @@ int levenshtein(char *s1, char *s2)
   return column[s1len];
 }
 
+/* Devolve o numero de arquivos contidos no diretorio*/
+int count_arqs(DIR *dirname)
+{
+  struct dirent *entry;
+  // count vai contar quantas vezes passamos pelo loop abaixo
+  int count = 0;
+
+  // Loop sobre todos os arquivos de um diretorio
+  while ((entry = readdir(dirname)))
+  {
+    // Ignorando as entradas dos diretórios . e ..
+    if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
+      count++;
+  }
+  rewinddir(dirname);
+  return count;
+}
+
 /*
 Retorna uma lista de strings
 Cada string eh o caminho a um determinado curriculo
 */
-char **list_filename(char *dirname, int *list_size)
+char **list_filename(char *dirname, int *num_arq)
 {
-  // Vetor em que serao armazenados as strings
+  int i = 0;
   char **filenames;
-  filenames = malloc(sizeof(char *) * (N_ARCHS));
-
   DIR *cur_dir;
   struct dirent *entry;
   cur_dir = opendir(dirname);
@@ -42,8 +58,11 @@ char **list_filename(char *dirname, int *list_size)
     perror("ERRO ao abrir o diretório");
     exit(1);
   }
-  // I vai contar quantas vezes passamos pelo loop abaixo
-  int i = 0;
+
+  *num_arq = count_arqs(cur_dir);
+  // Vetor em que serao armazenados as strings
+  
+  filenames = malloc(sizeof(char *) * (*num_arq));
 
   // Loop sobre todos os arquivos de um diretorio
   while ((entry = readdir(cur_dir)))
@@ -51,6 +70,7 @@ char **list_filename(char *dirname, int *list_size)
     // Ignorando as entradas dos diretórios . e ..
     if (strcmp(entry->d_name, ".") && strcmp(entry->d_name, ".."))
     {
+      /* Dinifindo as entradas como "diretorio/xxxx.xml" */
       filenames[i] = malloc(sizeof(char) * LINESIZE);
       strcpy(filenames[i], dirname);
       strcat(filenames[i], "/");
@@ -58,8 +78,6 @@ char **list_filename(char *dirname, int *list_size)
       i++;
     }
   }
-  // Para nos informar o tamanho da stack criada
-  *list_size = i;
 
   closedir(cur_dir);
   return filenames;
