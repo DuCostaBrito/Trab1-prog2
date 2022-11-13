@@ -9,12 +9,7 @@
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 char **list_filename(char *dirname, int *num_arq);
-void free_list_filenames(char **list, int size);
-unsigned char *read_file(FILE *file);
-void get_data(char *string, char *lable, char *data, char **pointer);
-char *get_inside_lable(char *string, char *data);
-void process_event(char *string, char *lable[], lista_t *estrato[]);
-void comparing(FILE *arq,char *name, char *quali,fpos_t *ini);
-void get_lattes_data(char *lattes, char *per_path, char *conf_path);
+void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos[], lista_t *Conferencias[], int vetor_per[], int vetor_conf[]);
+void display_menu();
 
 #endif

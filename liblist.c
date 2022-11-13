@@ -146,6 +146,26 @@ int lista_pertence(lista_t *l, char *name)
     return 0;
 }
 
+int data_by_year(lista_t *l, int year)
+{
+    int n = 0;
+    nodo_l_t *ptr;
+    if (lista_vazia(l))
+        return 0;
+
+    ptr = l->ini->prox;
+    while ((ptr->prox != NULL))
+    {
+        if (ptr->year == year)
+        {
+            n++;
+        }
+        if ((n != 0) && (ptr->year != year))
+            return n;
+        ptr = ptr->prox;
+    }
+
+}
 char *return_quali(int i)
 {
     if (i == 0)

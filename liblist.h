@@ -60,4 +60,6 @@ int lista_pertence (lista_t* l, char *name);
 */
 void lista_imprime (lista_t* l, int i);
 
+int data_by_year(lista_t *l, int year);
+
 #endif

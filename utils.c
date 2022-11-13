@@ -61,7 +61,7 @@ char **list_filename(char *dirname, int *num_arq)
 
   *num_arq = count_arqs(cur_dir);
   // Vetor em que serao armazenados as strings
-  
+
   filenames = malloc(sizeof(char *) * (*num_arq));
 
   // Loop sobre todos os arquivos de um diretorio
@@ -195,49 +195,6 @@ int estrato_index(char *quali)
     return 9;
 }
 
-/* Pega o conteudo das lable e compara com outro arquivo para pegar a qualificacao */
-void process_event(char *string, char *lable[], lista_t *estrato[])
-{
-  FILE *arq;
-  fpos_t pos;          // Para guardar a posicao do inicio do arquivo
-  char date[5];        // Para guardar o ano
-  char quali[3];       // Para guardar a qualificacao
-  char name[LINESIZE]; // Para guardar o nome do evento
-  char *pointer;
-  int index;
-
-  // Abrindo o arquivo
-  arq = fopen(lable[3], "r");
-  if (!arq)
-  {
-    perror("Erro ao abrir arquivo");
-    exit(1);
-  }
-  fgetpos(arq, &pos);
-
-  /* Procurando pela data */
-  get_data(string, lable[1], date, &pointer);
-  while (pointer != NULL)
-  {
-    strcpy(quali, "NC");
-    /* Procurando o nome do evento*/
-    get_data(pointer, lable[2], name, &pointer);
-
-    /* Procurando pela qualificacao */
-    comparing(arq, name, quali, &pos);
-
-    /* Inserindo na lista correspondente */
-    index = estrato_index(quali);
-    lista_insere_ordenado(estrato[index], name, atoi(date));
-
-    /* Procuranodo pela data de novo */
-    get_data(pointer, lable[1], date, &pointer);
-  }
-  printf("\n");
-  fclose(arq);
-  return;
-}
-
 /*
 Compara o nome do evento com cada linha.
 Retorna a qualificacao se exite, ou "NC", caso nao exista. (POR REFERENCIA)
@@ -282,35 +239,98 @@ void comparing(FILE *arq, char *name, char *quali, fpos_t *ini)
   return;            // NAO CONTEM
 }
 
-void get_lattes_data(char *lattes, char *per_path, char *conf_path)
+/*
+Insere na lista de estrato todas as informacoes uteis do artigo.
+Tais como: ano, nome, estrato.
+*/
+void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato[], int array[])
 {
+  FILE *arq;
+  fpos_t pos;          // Para guardar a posicao do inicio do arquivo
+  char date[5];        // Para guardar o ano
+  char quali[3];       // Para guardar a qualificacao
+  char name[LINESIZE]; // Para guardar o nome do evento
+  char *pointer;
+  int index;
+
+  // Abrindo o arquivo
+  arq = fopen(lable[3], "r");
+  if (!arq)
+  {
+    perror("Erro ao abrir arquivo");
+    exit(1);
+  }
+  fgetpos(arq, &pos);
+
+  /* Procurando pela data */
+  get_data(string, lable[1], date, &pointer);
+  while (pointer != NULL)
+  {
+    strcpy(quali, "NC");
+    /* Procurando o nome do evento*/
+    get_data(pointer, lable[2], name, &pointer);
+
+    /* Procurando pela qualificacao */
+    comparing(arq, name, quali, &pos);
+
+    /* Inserindo na lista correspondente */
+    index = estrato_index(quali);
+    array[index + (n * 10)]++;
+    lista_insere_ordenado(estrato[index], name, atoi(date));
+
+    /* Procuranodo pela data de novo */
+    get_data(pointer, lable[1], date, &pointer);
+  }
+  fclose(arq);
+  return;
+}
+
+/* Realiza todo o processo, inserindo nas listas as producoes de todos os pesquisadores, e incrementando os vetores*/
+void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos[], lista_t *Conferencias[], int vetor_per[], int vetor_conf[])
+{
+  FILE *cur_file;
   int i;
+  unsigned char *lattes;
   /* Vetor de strings contendo as lables a serem procuradas */
   char *conf_lable[] = {"CONFERENCIAS", "ANO-DO-TRABALHO=", "NOME-DO-EVENTO=", conf_path};
   char *per_lable[] = {"PERIODICOS", "ANO-DO-ARTIGO=", "TITULO-DO-PERIODICO-OU-REVISTA=", per_path};
-  
-  lista_t *Periodicos[10];
-  lista_t *Conferencias[10];
-  for (i = 0; i < 10; i++)
+
+  for (i = 0; i < num_files; i++)
   {
-    Periodicos[i] = lista_cria();
-    Conferencias[i] = lista_cria();
+    cur_file = fopen(filenames[i], "r");
+    lattes = read_file(cur_file);
+    /* Le o lattes, procurando primeiro pelas conferencias e depois pelos periodicos*/
+    get_lattes_data((char *)lattes, i, conf_lable, Conferencias, vetor_conf);
+    get_lattes_data((char *)lattes, i, per_lable, Periodicos, vetor_per);
+    free(lattes);
   }
 
+  free_list_filenames(filenames, num_files);
 
-  process_event(lattes, conf_lable, Conferencias);
-  process_event(lattes, per_lable, Periodicos);
+  return;
+}
 
-
-  for (i = 0; i < 10; i++)
-    lista_imprime(Periodicos[i], i); 
-  
+void print_years(lista_t *Periodicos[], lista_t *Conferencias[])
+{
+  int i;
+  int year = Periodicos[0]->ini->year;
   
   for (i = 0; i < 10; i++)
   {
-    lista_destroi(Periodicos[i]);
-    lista_destroi(Conferencias[i]);
+    printf();
   }
+}
+
+/* Apenas uma funcao para organizar*/
+void display_menu()
+{
+  printf("SELECIONE UMA DAS OPCOES\n");
+  printf("0) Encerrar o programa\n");
+  printf("1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos\n");
+  printf("2) Apresentar a produção sumarizada do grupo por ordem de conferências discriminando os estratos\n");
+  printf("3) Apresentar a produção dos pesquisadores do grupo por ordem de autoria discriminando os estratos; Em periódicos. Em conferências\n");
+  printf("4) Apresentar a produção sumarizada do grupo por ano discriminando os estratos; Em periódicos; Em conferências.\n");
+  printf("Opcao: ");
 
   return;
 }
