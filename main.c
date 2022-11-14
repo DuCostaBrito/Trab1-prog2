@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "liblist.h"
+#include "libpool.h"
 #include <stdio.h>
 #include <unistd.h>
 
@@ -32,14 +33,18 @@ int main(int argc, char **argv)
             break;
         }
     }
-    /* Listas em que serao armazenados os artigos A1, A2, A3, A4, B1, B2, B3, B4, C, NC*/
-    lista_t *Periodicos[10];
-    lista_t *Conferencias[10];
-    for (i = 0; i < 10; i++)
-    {
-        Periodicos[i] = lista_cria();
-        Conferencias[i] = lista_cria();
-    }
+
+    /* Inicializando memory pools*/
+    pool pool_ptr1;
+    pool pool_ptr2;
+	poolInitialize(&pool_ptr1, sizeof(nodo_l_t), 1024);
+    poolInitialize(&pool_ptr2, sizeof(nodo_l_t), 1024);
+
+    /* Listas em que serao armazenados os artigos*/
+    lista_t *Periodicos = lista_cria();
+    lista_t *Conferencias = lista_cria();
+    Periodicos->nodes = poolMalloc(&pool_ptr1);
+    Conferencias->nodes = poolMalloc(&pool_ptr2);
 
     /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
     filenames = list_filename(dvalue, &num_files);
@@ -53,7 +58,6 @@ int main(int argc, char **argv)
     }
 
     printf("Deixando todos os dados a sua disposicao...\n");
-    /* Realizando todo o processo de antemao*/
     process_wrapper(filenames, num_files, pvalue, cvalue, Periodicos, Conferencias, vetor_per, vetor_conf);
 
     display_menu();
@@ -64,13 +68,13 @@ int main(int argc, char **argv)
             break;
         else if (option == 1)
         {
-            for (i = 0; i < 10; i++)
-                lista_imprime(Periodicos[i], i);
+            for (i = 0; i < 9; i++)
+                lista_imprime(Periodicos, i);
         }
         else if (option == 2)
         {
-            for (i = 0; i < 10; i++)
-                lista_imprime(Conferencias[i], i);
+            for (i = 0; i < 9; i++)
+                lista_imprime(Conferencias, i);
         }
         else if (option == 3)
         {
@@ -85,10 +89,13 @@ int main(int argc, char **argv)
         scanf(" %d", &option);
     }
 
-    for (i = 0; i < 10; i++)
-    {
-        lista_destroi(Periodicos[i]);
-        lista_destroi(Conferencias[i]);
-    }
+    /* Dando Free no que se faz necessario */
+    poolFree(&pool_ptr1, Periodicos->nodes);
+    poolFree(&pool_ptr2, Conferencias->nodes);
+    
+    free(Periodicos);
+    free(Conferencias);
+    poolFreePool(&pool_ptr1);
+    poolFreePool(&pool_ptr2);
     return 0;
 }

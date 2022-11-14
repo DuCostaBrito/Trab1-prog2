@@ -4,12 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <ctype.h>
+#include "libpool.h"
 #include "liblist.h"
 #define LINESIZE 120
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 char **list_filename(char *dirname, int *num_arq);
-void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos[], lista_t *Conferencias[], int vetor_per[], int vetor_conf[]);
+void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[]);
 void display_menu();
 
 #endif

@@ -24,6 +24,17 @@ int levenshtein(char *s1, char *s2)
   return column[s1len];
 }
 
+void string_upper(char *str)
+{
+  int i = 0;
+  while (str[i] != '\0')
+  {
+    str[i] = toupper(str[i]);
+    i++;
+  }
+  return;
+}
+
 /* Devolve o numero de arquivos contidos no diretorio*/
 int count_arqs(DIR *dirname)
 {
@@ -199,7 +210,7 @@ int estrato_index(char *quali)
 Compara o nome do evento com cada linha.
 Retorna a qualificacao se exite, ou "NC", caso nao exista. (POR REFERENCIA)
 */
-void comparing(FILE *arq, char *name, char *quali, fpos_t *ini)
+void comparing(FILE *arq, char *name, char *quali)
 {
   char line[LINESIZE];
   char ch;
@@ -222,31 +233,29 @@ void comparing(FILE *arq, char *name, char *quali, fpos_t *ini)
     line[i - 3] = '\0'; // Deixando so o nome na linha
 
     // Comparando cada linha com o nome do evento
-    if (levenshtein(line, name) <= 10)
+    if (levenshtein(line, name) <= 7)
     {
       // Pegando a qualificacao
       quali[0] = line[i - 2];
       quali[1] = line[i - 1];
       quali[2] = '\0';
-      name = line;
-      fsetpos(arq, ini); // Voltando o ponteiro para o inicio
+      rewind(arq); // Voltando o ponteiro para o inicio
       return;
     }
 
     ch = fgetc(arq);
   }
-  fsetpos(arq, ini); // Voltando o ponteiro para o inicio
-  return;            // NAO CONTEM
+  rewind(arq); // Voltando o ponteiro para o inicio
+  return;      // NAO CONTEM
 }
 
 /*
 Insere na lista de estrato todas as informacoes uteis do artigo.
 Tais como: ano, nome, estrato.
 */
-void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato[], int array[])
+void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato, int array[])
 {
   FILE *arq;
-  fpos_t pos;          // Para guardar a posicao do inicio do arquivo
   char date[5];        // Para guardar o ano
   char quali[3];       // Para guardar a qualificacao
   char name[LINESIZE]; // Para guardar o nome do evento
@@ -260,7 +269,6 @@ void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato[], int
     perror("Erro ao abrir arquivo");
     exit(1);
   }
-  fgetpos(arq, &pos);
 
   /* Procurando pela data */
   get_data(string, lable[1], date, &pointer);
@@ -270,13 +278,19 @@ void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato[], int
     /* Procurando o nome do evento*/
     get_data(pointer, lable[2], name, &pointer);
 
+    if (strcmp(lable[0], "PERIODICOS") == 0)
+      string_upper(name);
+
     /* Procurando pela qualificacao */
-    comparing(arq, name, quali, &pos);
+    comparing(arq, name, quali);
+
+    index = estrato_index(quali);
 
     /* Inserindo na lista correspondente */
-    index = estrato_index(quali);
+    insert(estrato, name, quali);
+
+    /* Inserindo no vetor de autor */
     array[index + (n * 10)]++;
-    lista_insere_ordenado(estrato[index], name, atoi(date));
 
     /* Procuranodo pela data de novo */
     get_data(pointer, lable[1], date, &pointer);
@@ -286,7 +300,7 @@ void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato[], int
 }
 
 /* Realiza todo o processo, inserindo nas listas as producoes de todos os pesquisadores, e incrementando os vetores*/
-void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos[], lista_t *Conferencias[], int vetor_per[], int vetor_conf[])
+void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[])
 {
   FILE *cur_file;
   int i;
@@ -310,20 +324,10 @@ void process_wrapper(char **filenames, int num_files, char *per_path, char *conf
   return;
 }
 
-void print_years(lista_t *Periodicos[], lista_t *Conferencias[])
-{
-  int i;
-  int year = Periodicos[0]->ini->year;
-  
-  for (i = 0; i < 10; i++)
-  {
-    printf();
-  }
-}
-
 /* Apenas uma funcao para organizar*/
 void display_menu()
 {
+  printf("\n");
   printf("SELECIONE UMA DAS OPCOES\n");
   printf("0) Encerrar o programa\n");
   printf("1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos\n");
