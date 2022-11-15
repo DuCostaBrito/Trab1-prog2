@@ -14,8 +14,7 @@ typedef struct nodo_l nodo_l_t;
 
 struct lista {
     nodo_l_t *nodes;      /* Nodos que serao alocados */
-    int size;        /* Index que paramos  de inserir */
-    int total;   /* Conta total de artigos */
+    int size;        /* Index que paramos  de inserir, e tambem o numero total de artigos */
 };
 typedef struct lista lista_t;
 

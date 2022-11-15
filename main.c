@@ -7,6 +7,7 @@
 int main(int argc, char **argv)
 {
     char **filenames;
+    char **authornames;
     char *cvalue = NULL;
     char *dvalue = NULL;
     char *pvalue = NULL;
@@ -48,6 +49,12 @@ int main(int argc, char **argv)
 
     /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
     filenames = list_filename(dvalue, &num_files);
+
+    /* Alocando memoria para vetor que contera o nome de cada pesquisador */
+    authornames = malloc(sizeof(char *) * (num_files));
+    for (i = 0; i < num_files; i++)
+        authornames[0] = malloc(sizeof(char) * LINESIZE);
+
     /* Vetores em que serao armazenados os numero de artigos de cada autor dividido por estrato*/
     int vetor_per[num_files * 10];
     int vetor_conf[num_files * 10];
@@ -58,7 +65,7 @@ int main(int argc, char **argv)
     }
 
     printf("Deixando todos os dados a sua disposicao...\n");
-    process_wrapper(filenames, num_files, pvalue, cvalue, Periodicos, Conferencias, vetor_per, vetor_conf);
+    process_wrapper(filenames, authornames, num_files, pvalue, cvalue, Periodicos, Conferencias, vetor_per, vetor_conf);
 
     display_menu();
     scanf(" %d", &option);
@@ -78,7 +85,7 @@ int main(int argc, char **argv)
         }
         else if (option == 3)
         {
-            /* FAZER */
+            author_summary(vetor_per, vetor_conf, authornames, num_files);
         }
             
         else if (option == 4)
@@ -97,5 +104,6 @@ int main(int argc, char **argv)
     free(Conferencias);
     poolFreePool(&pool_ptr1);
     poolFreePool(&pool_ptr2);
+    free_list_filenames(authornames, num_files);
     return 0;
 }

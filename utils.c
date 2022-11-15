@@ -300,11 +300,12 @@ void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato, int a
 }
 
 /* Realiza todo o processo, inserindo nas listas as producoes de todos os pesquisadores, e incrementando os vetores*/
-void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[])
+void process_wrapper(char **filenames, char **lattesnames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[])
 {
   FILE *cur_file;
   int i;
   unsigned char *lattes;
+  char *tmp;
   /* Vetor de strings contendo as lables a serem procuradas */
   char *conf_lable[] = {"CONFERENCIAS", "ANO-DO-TRABALHO=", "NOME-DO-EVENTO=", conf_path};
   char *per_lable[] = {"PERIODICOS", "ANO-DO-ARTIGO=", "TITULO-DO-PERIODICO-OU-REVISTA=", per_path};
@@ -313,6 +314,8 @@ void process_wrapper(char **filenames, int num_files, char *per_path, char *conf
   {
     cur_file = fopen(filenames[i], "r");
     lattes = read_file(cur_file);
+    /* Procurando pelo nome do pesquisador */
+    get_data((char*)lattes, "NOME-COMPLETO=", lattesnames[i], &tmp);
     /* Le o lattes, procurando primeiro pelas conferencias e depois pelos periodicos*/
     get_lattes_data((char *)lattes, i, conf_lable, Conferencias, vetor_conf);
     get_lattes_data((char *)lattes, i, per_lable, Periodicos, vetor_per);
@@ -321,6 +324,31 @@ void process_wrapper(char **filenames, int num_files, char *per_path, char *conf
 
   free_list_filenames(filenames, num_files);
 
+  return;
+}
+
+void author_summary(int periodicos[], int conferencias[], char **lattesnames, int num)
+{
+  int i;
+  for (i = 0; i < num; i++)
+  {
+    printf("\n");
+    printf("Pesquisador: %s \n", lattesnames[i]);
+    printf("+--------------------------------+ \n");
+    printf("|    Periodiocos  Conferencias   | \n");
+    printf("+--------------------------------+ \n");
+    printf("| A1:     %d           %d          |\n", periodicos[0 + i * 10], conferencias[0 + i * 10]);
+    printf("| A2:     %d           %d          |\n", periodicos[1 + i * 10], conferencias[1 + i * 10]);
+    printf("| A3:     %d           %d          |\n", periodicos[2 + i * 10], conferencias[2 + i * 10]);
+    printf("| A4:     %d           %d          |\n", periodicos[3 + i * 10], conferencias[3 + i * 10]);
+    printf("| B1:     %d           %d          |\n", periodicos[4 + i * 10], conferencias[4 + i * 10]);
+    printf("| B2:     %d           %d          |\n", periodicos[5 + i * 10], conferencias[5 + i * 10]);
+    printf("| B3:     %d           %d          |\n", periodicos[6 + i * 10], conferencias[6 + i * 10]);
+    printf("| B4:     %d           %d          |\n", periodicos[7 + i * 10], conferencias[7 + i * 10]);
+    printf("|  C:     %d           %d          |\n", periodicos[8 + i * 10], conferencias[8 + i * 10]);
+    printf("+--------------------------------+\n");
+    printf("\n");
+  }
   return;
 }
 

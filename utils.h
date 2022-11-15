@@ -11,7 +11,9 @@
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 char **list_filename(char *dirname, int *num_arq);
-void process_wrapper(char **filenames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[]);
+void free_list_filenames(char **list, int size);
+void process_wrapper(char **filenames, char **lattesnames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[]);
+void author_summary(int periodicos[], int conferencias[], char **authornames, int num);
 void display_menu();
 
 #endif

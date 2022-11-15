@@ -9,7 +9,6 @@ lista_t *lista_cria()
         return NULL;
     
     l->size = 0;
-    l->total = 0;
     return l;
 }
 
@@ -22,7 +21,6 @@ void insert(lista_t *l, char *name, char *quali)
         if (strcmp(l->nodes[i].name, name) == 0)
         {
             l->nodes[i].n_participation = l->nodes[i].n_participation + 1;
-            l->total++;
             return;
         }
     }
@@ -31,7 +29,6 @@ void insert(lista_t *l, char *name, char *quali)
     strcpy(l->nodes[l->size].name, name);
     l->nodes[l->size].n_participation = 1;
     l->size = l->size + 1;
-    l->total = l->total + 1;
     return;
 }
 
