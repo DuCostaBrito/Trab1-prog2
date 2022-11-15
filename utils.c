@@ -253,7 +253,7 @@ void comparing(FILE *arq, char *name, char *quali)
 Insere na lista de estrato todas as informacoes uteis do artigo.
 Tais como: ano, nome, estrato.
 */
-void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato, int array[])
+void get_lattes_data(char *string, int n, char *lable[], anos_l * anos, lista_t *estrato, int array[])
 {
   FILE *arq;
   char date[5];        // Para guardar o ano
@@ -289,6 +289,10 @@ void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato, int a
     /* Inserindo na lista correspondente */
     insert(estrato, name, quali);
 
+    /* Inserindo na arvore */
+    
+    insert_year(anos, atoi(date), index, lable[0]);
+
     /* Inserindo no vetor de autor */
     array[index + (n * 10)]++;
 
@@ -300,7 +304,7 @@ void get_lattes_data(char *string, int n, char *lable[], lista_t *estrato, int a
 }
 
 /* Realiza todo o processo, inserindo nas listas as producoes de todos os pesquisadores, e incrementando os vetores*/
-void process_wrapper(char **filenames, char **lattesnames, int num_files, char *per_path, char *conf_path, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[])
+void process_wrapper(char **filenames, char **lattesnames, int num_files, char *per_path, char *conf_path, anos_l *anos, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[])
 {
   FILE *cur_file;
   int i;
@@ -315,10 +319,10 @@ void process_wrapper(char **filenames, char **lattesnames, int num_files, char *
     cur_file = fopen(filenames[i], "r");
     lattes = read_file(cur_file);
     /* Procurando pelo nome do pesquisador */
-    get_data((char*)lattes, "NOME-COMPLETO=", lattesnames[i], &tmp);
+    get_data((char *)lattes, "NOME-COMPLETO=", lattesnames[i], &tmp);
     /* Le o lattes, procurando primeiro pelas conferencias e depois pelos periodicos*/
-    get_lattes_data((char *)lattes, i, conf_lable, Conferencias, vetor_conf);
-    get_lattes_data((char *)lattes, i, per_lable, Periodicos, vetor_per);
+    get_lattes_data((char *)lattes, i, conf_lable, anos, Conferencias, vetor_conf);
+    get_lattes_data((char *)lattes, i, per_lable, anos, Periodicos, vetor_per);
     free(lattes);
   }
 

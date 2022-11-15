@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "libbst.h"
 #include "liblist.h"
 #include "libpool.h"
 #include <stdio.h>
@@ -38,14 +39,20 @@ int main(int argc, char **argv)
     /* Inicializando memory pools*/
     pool pool_ptr1;
     pool pool_ptr2;
-	poolInitialize(&pool_ptr1, sizeof(nodo_l_t), 1024);
+    pool pool_ptr3;
+    poolInitialize(&pool_ptr1, sizeof(nodo_l_t), 1024);
     poolInitialize(&pool_ptr2, sizeof(nodo_l_t), 1024);
+    poolInitialize(&pool_ptr3, sizeof(tNo_l), 50);
 
     /* Listas em que serao armazenados os artigos*/
     lista_t *Periodicos = lista_cria();
     lista_t *Conferencias = lista_cria();
     Periodicos->nodes = poolMalloc(&pool_ptr1);
     Conferencias->nodes = poolMalloc(&pool_ptr2);
+
+    /* Arvore em que serao armazenados os dados de cada ano */
+    anos_l *anos = lista_anos();
+    anos->ano = poolMalloc(&pool_ptr3);
 
     /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
     filenames = list_filename(dvalue, &num_files);
@@ -65,7 +72,7 @@ int main(int argc, char **argv)
     }
 
     printf("Deixando todos os dados a sua disposicao...\n");
-    process_wrapper(filenames, authornames, num_files, pvalue, cvalue, Periodicos, Conferencias, vetor_per, vetor_conf);
+    process_wrapper(filenames, authornames, num_files, pvalue, cvalue, anos, Periodicos, Conferencias, vetor_per, vetor_conf);
 
     display_menu();
     scanf(" %d", &option);
@@ -87,10 +94,10 @@ int main(int argc, char **argv)
         {
             author_summary(vetor_per, vetor_conf, authornames, num_files);
         }
-            
+
         else if (option == 4)
         {
-            /* FAZER */
+            print_by_year(anos);
         }
         display_menu();
         scanf(" %d", &option);
@@ -99,11 +106,13 @@ int main(int argc, char **argv)
     /* Dando Free no que se faz necessario */
     poolFree(&pool_ptr1, Periodicos->nodes);
     poolFree(&pool_ptr2, Conferencias->nodes);
-    
+
     free(Periodicos);
     free(Conferencias);
+    free(anos);
     poolFreePool(&pool_ptr1);
     poolFreePool(&pool_ptr2);
+    poolFreePool(&pool_ptr3);
     free_list_filenames(authornames, num_files);
     return 0;
 }

@@ -12,6 +12,7 @@ lista_t *lista_cria()
     return l;
 }
 
+/* Insere o nodo na lista, mas antes procura por um nome similar */
 void insert(lista_t *l, char *name, char *quali)
 {
     int i;
