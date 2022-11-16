@@ -6,7 +6,7 @@
 #include <string.h>
 
 struct nodo_l {
-    char name[120]; /* Nome do evento */
+    char name[300]; /* Nome do evento */
     char quali[3];
     int n_participation;  /* Numero de partipacoes */
 };

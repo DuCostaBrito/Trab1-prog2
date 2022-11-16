@@ -7,8 +7,8 @@
 #include <ctype.h>
 #include "libpool.h"
 #include "liblist.h"
-#include "libbst.h"
-#define LINESIZE 120
+#include "years.h"
+#define LINESIZE 300
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 char **list_filename(char *dirname, int *num_arq);

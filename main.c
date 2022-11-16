@@ -1,9 +1,9 @@
-#include "utils.h"
-#include "libbst.h"
-#include "liblist.h"
-#include "libpool.h"
 #include <stdio.h>
 #include <unistd.h>
+#include "utils.h"
+#include "years.h"
+#include "liblist.h"
+#include "libpool.h"
 
 int main(int argc, char **argv)
 {
@@ -36,6 +36,9 @@ int main(int argc, char **argv)
         }
     }
 
+    /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
+    filenames = list_filename(dvalue, &num_files);
+    
     /* Inicializando memory pools*/
     pool pool_ptr1;
     pool pool_ptr2;
@@ -54,13 +57,10 @@ int main(int argc, char **argv)
     anos_l *anos = lista_anos();
     anos->ano = poolMalloc(&pool_ptr3);
 
-    /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
-    filenames = list_filename(dvalue, &num_files);
-
     /* Alocando memoria para vetor que contera o nome de cada pesquisador */
     authornames = malloc(sizeof(char *) * (num_files));
     for (i = 0; i < num_files; i++)
-        authornames[0] = malloc(sizeof(char) * LINESIZE);
+        authornames[i] = malloc(sizeof(char) * LINESIZE);
 
     /* Vetores em que serao armazenados os numero de artigos de cada autor dividido por estrato*/
     int vetor_per[num_files * 10];
