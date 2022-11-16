@@ -88,11 +88,12 @@ int main(int argc, char **argv)
         }
         else if (option == 3)
         {
-            print_years(Periodicos, Conferencias);
+            print_authors(Periodicos, Conferencias, authornames, num_files);
         }
 
         else if (option == 4)
         {
+            print_years(Periodicos, Conferencias);
         }
         else if (option == 5)
         {

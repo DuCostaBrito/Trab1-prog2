@@ -139,7 +139,7 @@ void print_years(lista_t *per, lista_t *conf)
             vetor2[conf->nodes[j].quali]++;
             j++;
         }
-        
+
         printf("A1:    %d     %d \n", vetor[0], vetor2[0]);
         printf("A2:    %d     %d \n", vetor[1], vetor2[1]);
         printf("A3:    %d     %d \n", vetor[2], vetor2[2]);
@@ -150,11 +150,55 @@ void print_years(lista_t *per, lista_t *conf)
         printf("B4:    %d     %d \n", vetor[7], vetor2[7]);
         printf(" C:    %d     %d \n", vetor[8], vetor2[8]);
         printf("\n");
-            
+
         for (n = 0; n < 10; n++)
         {
             vetor[n] = 0;
             vetor2[n] = 0;
+        }
+    }
+}
+
+void print_authors(lista_t *per, lista_t *conf, char **lattesnames, int n)
+{
+    int i, j, x;
+    int vetor[9], vetor2[9];
+    for (i = 0; i < 9; i++)
+    {
+        vetor[i] = 0;
+        vetor2[i] = 0;
+    }
+    for (x = 0; x < n; x++)
+    {
+        printf("Pesquisador: %s \n", lattesnames[x]);
+        for (j = 0; j < 9; j++)
+        {
+            for (i = 0; i < per->size; i++)
+            {
+                if ((per->nodes[i].author == x) && (per->nodes[i].quali == j))
+                    vetor[j]++;
+            }
+
+            for (i = 0; i < conf->size; i++)
+            {
+                if ((conf->nodes[i].author == x) && (conf->nodes[i].quali == j))
+                    vetor2[j]++;
+            }
+        }
+        printf("A1:    %d     %d \n", vetor[0], vetor2[0]);
+        printf("A2:    %d     %d \n", vetor[1], vetor2[1]);
+        printf("A3:    %d     %d \n", vetor[2], vetor2[2]);
+        printf("A4:    %d     %d \n", vetor[3], vetor2[3]);
+        printf("B1:    %d     %d \n", vetor[4], vetor2[4]);
+        printf("B2:    %d     %d \n", vetor[5], vetor2[5]);
+        printf("B3:    %d     %d \n", vetor[6], vetor2[6]);
+        printf("B4:    %d     %d \n", vetor[7], vetor2[7]);
+        printf(" C:    %d     %d \n", vetor[8], vetor2[8]);
+        printf("\n\n");
+        for (i = 0; i < 9; i++)
+        {
+            vetor[i] = 0;
+            vetor2[i] = 0;
         }
     }
 }
