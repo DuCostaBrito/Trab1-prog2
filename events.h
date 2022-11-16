@@ -6,9 +6,11 @@
 #include <string.h>
 
 struct nodo_l {
+    int author;  /* Nos diz quem eh o autor do artigo */
+    int year;   /* Ano de publicacao */
+    int quali; /* Classificacao */
     char name[240]; /* Nome do evento */
-    char quali[3];
-    int n_participation;  /* Numero de partipacoes */
+    char flag;  /* sinaliza se ja foi contado. "0" ja foi contado, caso contrario "1" */
 };
 typedef struct nodo_l nodo_l_t;
 
@@ -19,7 +21,7 @@ struct lista {
 typedef struct lista lista_t;
 
 lista_t *lista_cria();
-void insert(lista_t *l, char *name, char *quali);
-void lista_imprime(lista_t *l, int i);
+void insert(lista_t *l, char *name, int year, int i);
+void print_lista(lista_t *l);
 
 #endif

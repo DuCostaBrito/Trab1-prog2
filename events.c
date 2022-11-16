@@ -1,35 +1,24 @@
 #include "events.h"
 #include "utils.h"
 
-
 lista_t *lista_cria()
 {
     lista_t *l;
     /* aloca espaco para a cabeca da lista_t */
     if (!(l = (lista_t *)malloc(sizeof(lista_t))))
         return NULL;
-    
+
     l->size = 0;
     return l;
 }
 
 /* Insere o nodo na lista, mas antes procura por um nome similar */
-void insert(lista_t *l, char *name, char *quali)
+void insert(lista_t *l, char *name, int year, int i)
 {
-    int i;
-
-    for (i = 0; i < l->size; i++)
-    {
-        if (strcmp(l->nodes[i].name, name) == 0)
-        {
-            l->nodes[i].n_participation = l->nodes[i].n_participation + 1;
-            return;
-        }
-    }
-
-    strcpy(l->nodes[l->size].quali, quali);
     strcpy(l->nodes[l->size].name, name);
-    l->nodes[l->size].n_participation = 1;
+    l->nodes[l->size].year = year;
+    l->nodes[l->size].author = i;
+    l->nodes[l->size].flag = '0';
     l->size = l->size + 1;
     return;
 }
@@ -57,28 +46,50 @@ char *return_quali(int i)
     else
         return "NC";
 }
-void lista_imprime(lista_t *l, int i)
+
+void summary(lista_t *l, int vetor[])
 {
-    int j;
-    int c = 0;
-    char quali[3];
-    strcpy(quali, return_quali(i));
-    if (l->size == 0)
-        return;
-    /* Verificando se existe algum artigo compartivel antes da impressao*/
-    for (j = 0; j < l->size; j++)
-    { 
-        if (strcmp(quali, l->nodes[j].quali) == 0)
-            c++;
+    int i;
+    for (i = 0; i < l->size; i++)
+    {
+        vetor[l->nodes[i].quali]++;
     }
-    if (c == 0)
-        return;
-    printf("Estrato %s: \n", quali);
-    for (j = 0; j < l->size; j++)
-    { 
-        if (strcmp(quali, l->nodes[j].quali) == 0)
-            printf("%s: %d \n", l->nodes[j].name, l->nodes[j].n_participation);
+    return;
+}
+
+void print_lista(lista_t *l)
+{
+    int i, j, n;
+    int count;
+    int vetor[10];
+    for (i = 0; i < 10; i++)
+        vetor[i] = 0;
+    summary(l, vetor);
+    j = 0;
+    while (j < 9)
+    {
+        if (vetor[j] != 0)
+        {
+            printf("Estrato: %s \n", return_quali(j));
+            for (i = 0; i < l->size - 1; i++)
+            {
+                if ((l->nodes[i].quali == j) && (l->nodes[i].flag == '0'))
+                {
+                    count = 1;
+                    for (n = i + 1; n < l->size; n++)
+                    {
+                        if (strcmp(l->nodes[i].name, l->nodes[n].name) == 0)
+                        {
+                            l->nodes[n].flag = '1';
+                            count++;
+                        }
+                    }
+                    printf("%s : %d \n", l->nodes[i].name, count);
+                }
+            }
+            printf("\n");
+        }
+        j++;
     }
-    printf("\n");
     return;
 }

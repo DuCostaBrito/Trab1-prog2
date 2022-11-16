@@ -239,8 +239,7 @@ void comparing(FILE *arq, char *name, char *quali)
       quali[0] = line[i - 2];
       quali[1] = line[i - 1];
       quali[2] = '\0';
-      /* Copiando o nome oficial */
-      strcpy(name, line);
+      name = line;
       rewind(arq); // Voltando o ponteiro para o inicio
       return;
     }
@@ -251,70 +250,42 @@ void comparing(FILE *arq, char *name, char *quali)
   return;      // NAO CONTEM
 }
 
-/*
-Insere na lista de estrato todas as informacoes uteis do artigo.
-Tais como: ano, nome, estrato.
-*/
-void get_lattes_data(char *string, int n, char *lable[], anos_l * anos, lista_t *estrato, int array[])
+/* Insere todos os eventos na lista */
+void get_lattes_events(char *string, int n, char *lable[], lista_t *estrato)
 {
-  FILE *arq;
   char date[5];        // Para guardar o ano
-  char quali[3];       // Para guardar a qualificacao
   char name[LINESIZE]; // Para guardar o nome do evento
   char *pointer;
-  int index;
-
-  // Abrindo o arquivo
-  arq = fopen(lable[3], "r");
-  if (!arq)
-  {
-    perror("Erro ao abrir arquivo");
-    exit(1);
-  }
 
   /* Procurando pela data */
   get_data(string, lable[1], date, &pointer);
   while (pointer != NULL)
   {
-    strcpy(quali, "NC");
     /* Procurando o nome do evento*/
     get_data(pointer, lable[2], name, &pointer);
 
     if (strcmp(lable[0], "PERIODICOS") == 0)
       string_upper(name);
 
-    /* Procurando pela qualificacao */
-    comparing(arq, name, quali);
-
-    index = estrato_index(quali);
-
-    /* Inserindo na lista correspondente */
-    insert(estrato, name, quali);
-
-    /* Inserindo na arvore ate o nivel de classificacao C*/
-    if (index < 9)
-      insert_year(anos, atoi(date), index, lable[0]);
-
-    /* Inserindo no vetor de autor */
-    array[index + (n * 10)]++;
+    /* Inserindo na lista de eventos */
+    insert(estrato, name, atoi(date), n);
 
     /* Procuranodo pela data de novo */
     get_data(pointer, lable[1], date, &pointer);
   }
-  fclose(arq);
   return;
 }
 
 /* Realiza todo o processo, inserindo nas listas as producoes de todos os pesquisadores, e incrementando os vetores*/
-void process_wrapper(char **filenames, char **lattesnames, int num_files, char *per_path, char *conf_path, anos_l *anos, lista_t *Periodicos, lista_t *Conferencias, int vetor_per[], int vetor_conf[])
+void get_all_events(char **filenames, char **lattesnames, int num_files, lista_t *Periodicos, lista_t *Conferencias)
 {
   FILE *cur_file;
   int i;
   unsigned char *lattes;
   char *tmp;
   /* Vetor de strings contendo as lables a serem procuradas */
-  char *conf_lable[] = {"CONFERENCIAS", "ANO-DO-TRABALHO=", "NOME-DO-EVENTO=", conf_path};
-  char *per_lable[] = {"PERIODICOS", "ANO-DO-ARTIGO=", "TITULO-DO-PERIODICO-OU-REVISTA=", per_path};
+  char *conf_lable[] = {"CONFERENCIAS", "ANO-DO-TRABALHO=", "NOME-DO-EVENTO="};
+  char *per_lable[] = {"PERIODICOS", "ANO-DO-ARTIGO=", "TITULO-DO-PERIODICO-OU-REVISTA="};
 
   for (i = 0; i < num_files; i++)
   {
@@ -323,14 +294,33 @@ void process_wrapper(char **filenames, char **lattesnames, int num_files, char *
     /* Procurando pelo nome do pesquisador */
     get_data((char *)lattes, "NOME-COMPLETO=", lattesnames[i], &tmp);
     /* Le o lattes, procurando primeiro pelas conferencias e depois pelos periodicos*/
-    get_lattes_data((char *)lattes, i, conf_lable, anos, Conferencias, vetor_conf);
-    get_lattes_data((char *)lattes, i, per_lable, anos, Periodicos, vetor_per);
+    get_lattes_events((char *)lattes, i, conf_lable, Conferencias);
+    get_lattes_events((char *)lattes, i, per_lable, Periodicos);
     free(lattes);
   }
 
   free_list_filenames(filenames, num_files);
 
   return;
+}
+
+void get_qualifications(char *filename, lista_t *eventos)
+{
+  FILE *arq;
+  int i;
+  int index;
+  char quali[3];
+
+  arq = fopen(filename, "r");
+
+  for (i = 0; i < eventos->size; i++)
+  {
+    strcpy(quali, "NC");
+    comparing(arq, eventos->nodes[i].name, quali);
+    index = estrato_index(quali);
+    eventos->nodes[i].quali = index;
+  }
+  fclose(arq);
 }
 
 /* Funcao para printar vetor de autores */

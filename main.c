@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "utils.h"
-#include "years.h"
 #include "events.h"
 #include "libpool.h"
 
@@ -42,20 +41,14 @@ int main(int argc, char **argv)
     /* Inicializando memory pools*/
     pool pool_ptr1;
     pool pool_ptr2;
-    pool pool_ptr3;
     poolInitialize(&pool_ptr1, sizeof(nodo_l_t), 1024);
     poolInitialize(&pool_ptr2, sizeof(nodo_l_t), 1024);
-    poolInitialize(&pool_ptr3, sizeof(tNo_l), 50);
 
     /* Listas em que serao armazenados os artigos*/
     lista_t *Periodicos = lista_cria();
     lista_t *Conferencias = lista_cria();
     Periodicos->nodes = poolMalloc(&pool_ptr1);
     Conferencias->nodes = poolMalloc(&pool_ptr2);
-
-    /* Arvore em que serao armazenados os dados de cada ano */
-    anos_l *anos = lista_anos();
-    anos->ano = poolMalloc(&pool_ptr3);
 
     /* Alocando memoria para vetor que contera o nome de cada pesquisador */
     authornames = malloc(sizeof(char *) * (num_files));
@@ -72,7 +65,11 @@ int main(int argc, char **argv)
     }
 
     printf("Deixando todos os dados a sua disposicao...\n");
-    process_wrapper(filenames, authornames, num_files, pvalue, cvalue, anos, Periodicos, Conferencias, vetor_per, vetor_conf);
+    /* Inserindo nas listas os eventos listados em todos os lattes */
+    get_all_events(filenames, authornames, num_files, Periodicos, Conferencias);
+    /* Classificando cada artigo */
+    get_qualifications(cvalue, Conferencias);
+    get_qualifications(pvalue, Periodicos);
 
     display_menu();
     scanf(" %d", &option);
@@ -82,40 +79,28 @@ int main(int argc, char **argv)
             break;
         else if (option == 1)
         {
-            for (i = 0; i < 9; i++)
-                lista_imprime(Periodicos, i);
+            print_lista(Periodicos);
         }
         else if (option == 2)
         {
-            for (i = 0; i < 9; i++)
-                lista_imprime(Conferencias, i);
+            
+            print_lista(Conferencias); 
         }
         else if (option == 3)
         {
-            author_summary(vetor_per, vetor_conf, authornames, num_files);
+            
         }
 
         else if (option == 4)
         {
-            print_by_year(anos);
         }
         else if (option == 5)
         {
-            printf("\n");
-            printf("Periodicos: \n");
-            lista_imprime(Periodicos, 8);
-            printf("\n");
-            printf("Conferencias: \n");
-            lista_imprime(Conferencias, 8);
+            
         }
         else if (option == 6)
         {
-            printf("\n");
-            printf("Periodicos: \n");
-            lista_imprime(Periodicos, 9);
-            printf("\n");
-            printf("Conferencias: \n");
-            lista_imprime(Conferencias, 9);
+            
         }
         display_menu();
         scanf(" %d", &option);
@@ -127,10 +112,8 @@ int main(int argc, char **argv)
 
     free(Periodicos);
     free(Conferencias);
-    free(anos);
     poolFreePool(&pool_ptr1);
     poolFreePool(&pool_ptr2);
-    poolFreePool(&pool_ptr3);
     free_list_filenames(authornames, num_files);
     return 0;
 }
