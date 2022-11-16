@@ -23,5 +23,6 @@ typedef struct lista lista_t;
 lista_t *lista_cria();
 void insert(lista_t *l, char *name, int year, int i);
 void print_lista(lista_t *l);
+void print_years(lista_t *per, lista_t *conf);
 
 #endif

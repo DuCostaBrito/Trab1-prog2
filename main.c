@@ -88,7 +88,7 @@ int main(int argc, char **argv)
         }
         else if (option == 3)
         {
-            
+            print_years(Periodicos, Conferencias);
         }
 
         else if (option == 4)

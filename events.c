@@ -93,3 +93,68 @@ void print_lista(lista_t *l)
     }
     return;
 }
+
+void insertionSort(lista_t *l)
+{
+    int i, j;
+    nodo_l_t tmp;
+    for (i = 1; i < l->size; i++)
+    {
+        tmp = l->nodes[i];
+        j = i - 1;
+        while ((j >= 0) && (l->nodes[j].year > tmp.year))
+        {
+            l->nodes[j + 1] = l->nodes[j];
+            j--;
+        }
+        l->nodes[j + 1] = tmp;
+    }
+}
+
+void print_years(lista_t *per, lista_t *conf)
+{
+    int i, j, min, n;
+    i = 0;
+    j = 0;
+    int vetor[10];
+    int vetor2[10];
+    insertionSort(per);
+    insertionSort(conf);
+    for (i = 0; i < 10; i++)
+    {
+        vetor[i] = 0;
+        vetor2[i] = 0;
+    }
+    while ((i < per->size) || (j < conf->size))
+    {
+        min = MIN3(per->nodes[i].year, conf->nodes[j].year, 2025);
+        printf("Ano: %d\n", min);
+        while ((i < per->size) && (per->nodes[i].year == min))
+        {
+            vetor[per->nodes[i].quali]++;
+            i++;
+        }
+        while ((j < conf->size) && (conf->nodes[j].year == min))
+        {
+            vetor2[conf->nodes[j].quali]++;
+            j++;
+        }
+        
+        printf("A1:    %d     %d \n", vetor[0], vetor2[0]);
+        printf("A2:    %d     %d \n", vetor[1], vetor2[1]);
+        printf("A3:    %d     %d \n", vetor[2], vetor2[2]);
+        printf("A4:    %d     %d \n", vetor[3], vetor2[3]);
+        printf("B1:    %d     %d \n", vetor[4], vetor2[4]);
+        printf("B2:    %d     %d \n", vetor[5], vetor2[5]);
+        printf("B3:    %d     %d \n", vetor[6], vetor2[6]);
+        printf("B4:    %d     %d \n", vetor[7], vetor2[7]);
+        printf(" C:    %d     %d \n", vetor[8], vetor2[8]);
+        printf("\n");
+            
+        for (n = 0; n < 10; n++)
+        {
+            vetor[n] = 0;
+            vetor2[n] = 0;
+        }
+    }
+}
