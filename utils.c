@@ -235,10 +235,12 @@ void comparing(FILE *arq, char *name, char *quali)
     // Comparando cada linha com o nome do evento
     if (levenshtein(line, name) <= 7)
     {
-      // Pegando a qualificacao
+      /* Pegando a qualificacao */ 
       quali[0] = line[i - 2];
       quali[1] = line[i - 1];
       quali[2] = '\0';
+      /* Copiando o nome oficial */
+      strcpy(name, line);
       rewind(arq); // Voltando o ponteiro para o inicio
       return;
     }
@@ -289,9 +291,9 @@ void get_lattes_data(char *string, int n, char *lable[], anos_l * anos, lista_t 
     /* Inserindo na lista correspondente */
     insert(estrato, name, quali);
 
-    /* Inserindo na arvore */
-    
-    insert_year(anos, atoi(date), index, lable[0]);
+    /* Inserindo na arvore ate o nivel de classificacao C*/
+    if (index < 9)
+      insert_year(anos, atoi(date), index, lable[0]);
 
     /* Inserindo no vetor de autor */
     array[index + (n * 10)]++;
@@ -331,6 +333,7 @@ void process_wrapper(char **filenames, char **lattesnames, int num_files, char *
   return;
 }
 
+/* Funcao para printar vetor de autores */
 void author_summary(int periodicos[], int conferencias[], char **lattesnames, int num)
 {
   int i;
@@ -361,11 +364,13 @@ void display_menu()
 {
   printf("\n");
   printf("SELECIONE UMA DAS OPCOES\n");
-  printf("0) Encerrar o programa\n");
-  printf("1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos\n");
-  printf("2) Apresentar a produção sumarizada do grupo por ordem de conferências discriminando os estratos\n");
-  printf("3) Apresentar a produção dos pesquisadores do grupo por ordem de autoria discriminando os estratos; Em periódicos. Em conferências\n");
+  printf("0) Encerrar o programa.\n");
+  printf("1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos.\n");
+  printf("2) Apresentar a produção sumarizada do grupo por ordem de conferências discriminando os estratos.\n");
+  printf("3) Apresentar a produção dos pesquisadores do grupo por ordem de autoria discriminando os estratos; Em periódicos. Em conferências.\n");
   printf("4) Apresentar a produção sumarizada do grupo por ano discriminando os estratos; Em periódicos; Em conferências.\n");
+  printf("5) Listar aqueles periódicos e eventos classificados no nível C.\n");
+  printf("6) Listar os periódicos e eventos não classificados.\n");
   printf("Opcao: ");
 
   return;

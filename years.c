@@ -40,9 +40,23 @@ void insert_year(anos_l *anos, int year, int index, char *lable)
     return;
 }
 
+void insertionSort(anos_l *anos)
+{
+    int i, j;
+    tNo_l aux;
+    for (i = 1; i < anos->size; i++)
+    {
+        aux = anos->ano[i];
+        for (j = i; (j > 0) && (aux.year < anos->ano[j - 1].year); j--)
+            anos->ano[j] = anos->ano[j - 1];
+        anos->ano[j] = aux;
+    }
+}
+
 void print_by_year(anos_l *anos)
 {
     int i;
+    insertionSort(anos);
     for (i = 0; i < anos->size; i++)
     {
         printf("\n");

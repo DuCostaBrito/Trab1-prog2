@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "utils.h"
 #include "years.h"
-#include "liblist.h"
+#include "events.h"
 #include "libpool.h"
 
 int main(int argc, char **argv)
@@ -98,6 +98,24 @@ int main(int argc, char **argv)
         else if (option == 4)
         {
             print_by_year(anos);
+        }
+        else if (option == 5)
+        {
+            printf("\n");
+            printf("Periodicos: \n");
+            lista_imprime(Periodicos, 8);
+            printf("\n");
+            printf("Conferencias: \n");
+            lista_imprime(Conferencias, 8);
+        }
+        else if (option == 6)
+        {
+            printf("\n");
+            printf("Periodicos: \n");
+            lista_imprime(Periodicos, 9);
+            printf("\n");
+            printf("Conferencias: \n");
+            lista_imprime(Conferencias, 9);
         }
         display_menu();
         scanf(" %d", &option);

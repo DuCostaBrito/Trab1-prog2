@@ -1,12 +1,12 @@
 /* Estrutura de lista para armazenar os artigos */
-#ifndef _LIBlist_t_H
-#define _LIBlist_t_H
+#ifndef _EVENTS_t_H
+#define _EVENTS_t_H
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>
 
 struct nodo_l {
-    char name[300]; /* Nome do evento */
+    char name[240]; /* Nome do evento */
     char quali[3];
     int n_participation;  /* Numero de partipacoes */
 };

@@ -1,4 +1,5 @@
-#include "liblist.h"
+#include "events.h"
+#include "utils.h"
 
 
 lista_t *lista_cria()
@@ -59,9 +60,18 @@ char *return_quali(int i)
 void lista_imprime(lista_t *l, int i)
 {
     int j;
+    int c = 0;
     char quali[3];
     strcpy(quali, return_quali(i));
     if (l->size == 0)
+        return;
+    /* Verificando se existe algum artigo compartivel antes da impressao*/
+    for (j = 0; j < l->size; j++)
+    { 
+        if (strcmp(quali, l->nodes[j].quali) == 0)
+            c++;
+    }
+    if (c == 0)
         return;
     printf("Estrato %s: \n", quali);
     for (j = 0; j < l->size; j++)
