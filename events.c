@@ -94,52 +94,86 @@ void print_lista(lista_t *l)
     return;
 }
 
-void insertionSort(lista_t *l)
+void insertionSort(int array[], int size)
 {
-    int i, j;
-    nodo_l_t tmp;
-    for (i = 1; i < l->size; i++)
+    for (int step = 1; step < size; step++)
     {
-        tmp = l->nodes[i];
-        j = i - 1;
-        while ((j >= 0) && (l->nodes[j].year > tmp.year))
+        int key = array[step];
+        int j = step - 1;
+
+        // Compare key with each element on the left of it until an element smaller than
+        // it is found.
+        // For descending order, change key<array[j] to key>array[j].
+        while (key < array[j] && j >= 0)
         {
-            l->nodes[j + 1] = l->nodes[j];
-            j--;
+            array[j + 1] = array[j];
+            --j;
         }
-        l->nodes[j + 1] = tmp;
+        array[j + 1] = key;
     }
 }
 
 void print_years(lista_t *per, lista_t *conf)
 {
-    int i, j, min, n;
-    i = 0;
-    j = 0;
+    int anos[50];
+    int len, i, j, achei;
+    len = 0;
     int vetor[10];
     int vetor2[10];
-    insertionSort(per);
-    insertionSort(conf);
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < per->size; i++)
     {
-        vetor[i] = 0;
-        vetor2[i] = 0;
+        achei = 0;
+        for (j = 0; j < len; j++)
+        {
+            if (per->nodes[i].year == anos[j])
+            {
+                achei = 1;
+                break;
+            }
+        }
+        if ((achei == 0) && (per->nodes[i].quali < 9))
+        {
+            anos[len] = per->nodes[i].year;
+            len++;
+        }
     }
-    while ((i < per->size) || (j < conf->size))
+    for (i = 0; i < conf->size; i++)
     {
-        min = MIN3(per->nodes[i].year, conf->nodes[j].year, 2025);
-        printf("Ano: %d\n", min);
-        while ((i < per->size) && (per->nodes[i].year == min))
+        achei = 0;
+        for (j = 0; j < len; j++)
         {
-            vetor[per->nodes[i].quali]++;
-            i++;
+            if (conf->nodes[i].year == anos[j])
+            {
+                achei = 1;
+                break;
+            }
         }
-        while ((j < conf->size) && (conf->nodes[j].year == min))
+        if ((achei == 0) && (conf->nodes[i].quali < 9))
         {
-            vetor2[conf->nodes[j].quali]++;
-            j++;
+            anos[len] = conf->nodes[i].year;
+            len++;
         }
+    }
+    insertionSort(anos, len);
 
+    for (i = 0; i < len; i++)
+    {
+        for (j = 0; j < 10; j++)
+        {
+            vetor[j] = 0;
+            vetor2[j] = 0;
+        }
+        for (j = 0; j < per->size; j++)
+        {
+            if (per->nodes[j].year == anos[i])
+                vetor[per->nodes[j].quali]++;
+        }
+        for (j = 0; j < conf->size; j++)
+        {
+            if (conf->nodes[j].year == anos[i])
+                vetor2[conf->nodes[j].quali]++;
+        }
+        printf("Ano: %d \n", anos[i]);
         printf("A1:    %d     %d \n", vetor[0], vetor2[0]);
         printf("A2:    %d     %d \n", vetor[1], vetor2[1]);
         printf("A3:    %d     %d \n", vetor[2], vetor2[2]);
@@ -149,13 +183,7 @@ void print_years(lista_t *per, lista_t *conf)
         printf("B3:    %d     %d \n", vetor[6], vetor2[6]);
         printf("B4:    %d     %d \n", vetor[7], vetor2[7]);
         printf(" C:    %d     %d \n", vetor[8], vetor2[8]);
-        printf("\n");
-
-        for (n = 0; n < 10; n++)
-        {
-            vetor[n] = 0;
-            vetor2[n] = 0;
-        }
+        printf("\n\n");
     }
 }
 

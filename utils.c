@@ -239,7 +239,7 @@ void comparing(FILE *arq, char *name, char *quali)
       quali[0] = line[i - 2];
       quali[1] = line[i - 1];
       quali[2] = '\0';
-      name = line;
+      strcpy(name, line);
       rewind(arq); // Voltando o ponteiro para o inicio
       return;
     }
