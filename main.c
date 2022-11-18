@@ -1,8 +1,6 @@
-#include <stdio.h>
 #include <unistd.h>
 #include "utils.h"
-#include "events.h"
-#include "libpool.h"
+
 
 int main(int argc, char **argv)
 {
@@ -38,31 +36,16 @@ int main(int argc, char **argv)
     /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
     filenames = list_filename(dvalue, &num_files);
     
-    /* Inicializando memory pools*/
-    pool pool_ptr1;
-    pool pool_ptr2;
-    poolInitialize(&pool_ptr1, sizeof(nodo_l_t), 1024);
-    poolInitialize(&pool_ptr2, sizeof(nodo_l_t), 1024);
 
     /* Listas em que serao armazenados os artigos*/
     lista_t *Periodicos = lista_cria();
     lista_t *Conferencias = lista_cria();
-    Periodicos->nodes = poolMalloc(&pool_ptr1);
-    Conferencias->nodes = poolMalloc(&pool_ptr2);
 
     /* Alocando memoria para vetor que contera o nome de cada pesquisador */
     authornames = malloc(sizeof(char *) * (num_files));
     for (i = 0; i < num_files; i++)
         authornames[i] = malloc(sizeof(char) * LINESIZE);
 
-    /* Vetores em que serao armazenados os numero de artigos de cada autor dividido por estrato*/
-    int vetor_per[num_files * 10];
-    int vetor_conf[num_files * 10];
-    for (i = 0; i < (num_files * 10); i++)
-    {
-        vetor_conf[i] = 0;
-        vetor_per[i] = 0;
-    }
 
     printf("Deixando todos os dados a sua disposicao...\n");
     /* Inserindo nas listas os eventos listados em todos os lattes */
@@ -97,24 +80,28 @@ int main(int argc, char **argv)
         }
         else if (option == 5)
         {
-            
+            printf("Periodicos: \n");
+            print_estrato(Periodicos, 8);
+            printf("Conferencias: \n");
+            print_estrato(Conferencias, 8);
         }
         else if (option == 6)
         {
-            
+            printf("Periodicos: \n");
+            print_estrato(Periodicos, 9);
+            printf("Conferencias: \n");
+            print_estrato(Conferencias, 9);
         }
         display_menu();
         scanf(" %d", &option);
     }
 
-    /* Dando Free no que se faz necessario */
-    poolFree(&pool_ptr1, Periodicos->nodes);
-    poolFree(&pool_ptr2, Conferencias->nodes);
 
+    free(Periodicos->nodes);
+    free(Conferencias->nodes);
     free(Periodicos);
     free(Conferencias);
-    poolFreePool(&pool_ptr1);
-    poolFreePool(&pool_ptr2);
+
     free_list_filenames(authornames, num_files);
     return 0;
 }

@@ -5,9 +5,9 @@
 #include <string.h>
 #include <dirent.h>
 #include <ctype.h>
-#include "libpool.h"
 #include "events.h"
 #define LINESIZE 240
+#define BLOCK 200
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 
 int levenshtein(char *s1, char *s2);

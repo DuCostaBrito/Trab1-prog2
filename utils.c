@@ -120,7 +120,7 @@ unsigned char *read_file(FILE *file)
   int length = ftell(file);
 
   // Move o ponteiro de volta para o inicio
-  fseek(file, 0, SEEK_SET);
+  rewind(file);
 
   // Aloca dinamicamente o espaco no qual sera salvo todo o conteudo do texto
   unsigned char *string = malloc(sizeof(char) * (length + 1));
@@ -217,7 +217,7 @@ void comparing(FILE *arq, char *name, char *quali)
   int i;
 
   // Lendo cada linha
-  ch = fgetc(arq);
+  ch = getc(arq);
   while (ch != EOF)
   {
     i = 0;
@@ -225,7 +225,7 @@ void comparing(FILE *arq, char *name, char *quali)
     {
       line[i] = ch;
       i++;
-      ch = fgetc(arq);
+      ch = getc(arq);
     }
     line[i] = '\0';
     // LINHA COMPLETA
@@ -244,7 +244,7 @@ void comparing(FILE *arq, char *name, char *quali)
       return;
     }
 
-    ch = fgetc(arq);
+    ch = getc(arq);
   }
   rewind(arq); // Voltando o ponteiro para o inicio
   return;      // NAO CONTEM

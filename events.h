@@ -17,6 +17,7 @@ typedef struct nodo_l nodo_l_t;
 struct lista {
     nodo_l_t *nodes;      /* Nodos que serao alocados */
     int size;        /* Index que paramos  de inserir, e tambem o numero total de artigos */
+    int max_size;
 };
 typedef struct lista lista_t;
 
@@ -25,5 +26,6 @@ void insert(lista_t *l, char *name, int year, int i);
 void print_lista(lista_t *l);
 void print_years(lista_t *per, lista_t *conf);
 void print_authors(lista_t *per, lista_t *conf, char **lattesnames, int n);
+void print_estrato(lista_t *l, int e);
 
 #endif
