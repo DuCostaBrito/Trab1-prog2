@@ -22,10 +22,12 @@ struct lista {
 typedef struct lista lista_t;
 
 lista_t *lista_cria();
+void summary(lista_t *l, int vetor[]);
 void insert(lista_t *l, char *name, int year, int i);
 void print_lista(lista_t *l);
 void print_years(lista_t *per, lista_t *conf);
 void print_authors(lista_t *per, lista_t *conf, char **lattesnames, int n);
 void print_estrato(lista_t *l, int e);
+void plotGraph(lista_t *Periodicos, lista_t *Conferencias);
 
 #endif

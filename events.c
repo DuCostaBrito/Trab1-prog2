@@ -68,6 +68,7 @@ char *return_quali(int i)
         return "NC";
 }
 
+/* Retorna a quantidade de artigos contidos em cada estrato*/
 void summary(lista_t *l, int vetor[])
 {
     int i;
@@ -78,6 +79,7 @@ void summary(lista_t *l, int vetor[])
     return;
 }
 
+/* Printa toda a lista separada por estratos*/
 void print_lista(lista_t *l)
 {
     int i, j, n;
@@ -233,14 +235,14 @@ void print_authors(lista_t *per, lista_t *conf, char **lattesnames, int n)
         printf("|Conferencias  Periodiocos|\n");
         printf("+-------------------------+\n");
         printf("|   A1: %d   |   A1: %d   |\n", vetor[0], vetor2[0]);
-        printf("|   A2: %d   |   A1: %d   |\n", vetor[1], vetor2[1]);
-        printf("|   A3: %d   |   A1: %d   |\n", vetor[2], vetor2[2]);
-        printf("|   A4: %d   |   A1: %d   |\n", vetor[3], vetor2[3]);
-        printf("|   B1: %d   |   A1: %d   |\n", vetor[4], vetor2[4]);
-        printf("|   B2: %d   |   A1: %d   |\n", vetor[5], vetor2[5]);
-        printf("|   B3: %d   |   A1: %d   |\n", vetor[6], vetor2[6]);
-        printf("|   B4: %d   |   A1: %d   |\n", vetor[7], vetor2[7]);
-        printf("|    C: %d   |   A1: %d   |\n", vetor[8], vetor2[8]);
+        printf("|   A2: %d   |   A2: %d   |\n", vetor[1], vetor2[1]);
+        printf("|   A3: %d   |   A3: %d   |\n", vetor[2], vetor2[2]);
+        printf("|   A4: %d   |   A4: %d   |\n", vetor[3], vetor2[3]);
+        printf("|   B1: %d   |   B1: %d   |\n", vetor[4], vetor2[4]);
+        printf("|   B2: %d   |   B2: %d   |\n", vetor[5], vetor2[5]);
+        printf("|   B3: %d   |   B3: %d   |\n", vetor[6], vetor2[6]);
+        printf("|   B4: %d   |   B4: %d   |\n", vetor[7], vetor2[7]);
+        printf("|    C: %d   |    C: %d   |\n", vetor[8], vetor2[8]);
         printf("+------------------------+\n");
         printf("\n\n");
 
@@ -253,6 +255,7 @@ void print_authors(lista_t *per, lista_t *conf, char **lattesnames, int n)
     }
 }
 
+/* Printa os artigos de um determinado estrato */
 void print_estrato(lista_t *l, int e)
 {
     int vetor[10], i, n, count;
@@ -283,4 +286,54 @@ void print_estrato(lista_t *l, int e)
         printf("\n");
     }
     return;
+}
+
+void plotGraph(lista_t *Periodicos, lista_t *Conferencias)
+{
+    char *commandsForGnuplot[] =
+        {
+            "set title \"Artigos publicados em Periodicos e Conferencias do grupo\"font \",18\"",
+            "set yrange[0:]",
+            "set mytics 2",
+            "set style data histogram",
+            "set style histogram cluster gap 1",
+            "set style fill solid",
+            "set boxwidth 0.9",
+            "set xtics format \"\"",
+            "set grid ytics",
+            "unset grid",
+            "set border lw 2",
+            "set xlabel \"Estratos\"font \",18\"",
+            "set ylabel \"Quantidade\"font \",18\"",
+            "set xtics font \",15\"",
+            "set ytics font \",15\"",
+            "set key font \",12\"",
+            "plot 'data.tmp' using 2:xtic(1) title \"Periodicos\" linecolor \"red\",  \
+    'data.tmp' using 3 title \"Conferencias\" linecolor \"blue\""};
+
+    FILE *dataTmp = fopen("data.tmp", "w");
+
+    FILE *gnuplotPipe = popen("gnuplot -persistent", "w");
+
+    int i;
+    int vetor[9];
+    int vetor2[9];
+    for (i = 0; i < 9; i++)
+    {
+        vetor[i] = 0;
+        vetor2[i] = 0;
+    }
+
+    summary(Periodicos, vetor);
+    summary(Conferencias, vetor2);
+
+    fprintf(dataTmp, "# %s %s\n", "Periodicos", "Conferencias");
+    for (i = 0; i < 9; i++)
+        fprintf(dataTmp, "%s %d %d\n", return_quali(i), vetor[i], vetor2[i]);
+
+    for (i = 0; i < 17; i++)
+        fprintf(gnuplotPipe, "%s \n", commandsForGnuplot[i]);
+
+    fclose(dataTmp);
+    pclose(gnuplotPipe);
 }

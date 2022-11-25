@@ -50,7 +50,8 @@ int main(int argc, char **argv)
     printf("Deixando todos os dados a sua disposicao...\n");
     /* Inserindo nas listas os eventos listados em todos os lattes */
     get_all_events(filenames, authornames, num_files, Periodicos, Conferencias);
-    /* Classificando cada artigo */
+    
+    printf("Colhetando todas as classificacoes...\n");
     get_qualifications(cvalue, Conferencias);
     get_qualifications(pvalue, Periodicos);
 
@@ -92,11 +93,15 @@ int main(int argc, char **argv)
             printf("Conferencias: \n");
             print_estrato(Conferencias, 9);
         }
+        else if (option == 7)
+        {
+            plotGraph(Periodicos, Conferencias);
+        }
         display_menu();
         scanf(" %d", &option);
     }
 
-
+    printf("TOTAL: %d", Conferencias->size);
     free(Periodicos->nodes);
     free(Conferencias->nodes);
     free(Periodicos);

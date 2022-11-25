@@ -35,6 +35,32 @@ void string_upper(char *str)
   return;
 }
 
+/* Acha a index da qualificacao no vetor Estrato*/
+int estrato_index(char *quali)
+{
+  if (strcmp(quali, "A1") == 0)
+    return 0;
+  else if (strcmp(quali, "A2") == 0)
+    return 1;
+  else if (strcmp(quali, "A3") == 0)
+    return 2;
+  else if (strcmp(quali, "A4") == 0)
+    return 3;
+  else if (strcmp(quali, "B1") == 0)
+    return 4;
+  else if (strcmp(quali, "B2") == 0)
+    return 5;
+  else if (strcmp(quali, "B3") == 0)
+    return 6;
+  else if (strcmp(quali, "B4") == 0)
+    return 7;
+  else if (strcmp(quali, " C") == 0)
+    return 8;
+  else
+    return 9;
+}
+
+
 /* Devolve o numero de arquivos contidos no diretorio*/
 int count_arqs(DIR *dirname)
 {
@@ -181,31 +207,6 @@ void get_data(char *string, char *lable, char *data, char **pointer)
   return; // Lembrar de dar free
 }
 
-/* Acha a index da qualificacao no vetor Estrato*/
-int estrato_index(char *quali)
-{
-  if (strcmp(quali, "A1") == 0)
-    return 0;
-  else if (strcmp(quali, "A2") == 0)
-    return 1;
-  else if (strcmp(quali, "A3") == 0)
-    return 2;
-  else if (strcmp(quali, "A4") == 0)
-    return 3;
-  else if (strcmp(quali, "B1") == 0)
-    return 4;
-  else if (strcmp(quali, "B2") == 0)
-    return 5;
-  else if (strcmp(quali, "B3") == 0)
-    return 6;
-  else if (strcmp(quali, "B4") == 0)
-    return 7;
-  else if (strcmp(quali, " C") == 0)
-    return 8;
-  else
-    return 9;
-}
-
 /*
 Compara o nome do evento com cada linha.
 Retorna a qualificacao se exite, ou "NC", caso nao exista. (POR REFERENCIA)
@@ -233,7 +234,7 @@ void comparing(FILE *arq, char *name, char *quali)
     line[i - 3] = '\0'; // Deixando so o nome na linha
 
     // Comparando cada linha com o nome do evento
-    if (levenshtein(line, name) <= 7)
+    if (levenshtein(line, name) <= 10)
     {
       /* Pegando a qualificacao */ 
       quali[0] = line[i - 2];
@@ -264,6 +265,7 @@ void get_lattes_events(char *string, int n, char *lable[], lista_t *estrato)
     /* Procurando o nome do evento*/
     get_data(pointer, lable[2], name, &pointer);
 
+    /* Se for um peridodico, deixe tudo maiuscula */
     if (strcmp(lable[0], "PERIODICOS") == 0)
       string_upper(name);
 
@@ -304,6 +306,7 @@ void get_all_events(char **filenames, char **lattesnames, int num_files, lista_t
   return;
 }
 
+/* Roda toda a lista de artigos, colhetando suas qualificacoes*/
 void get_qualifications(char *filename, lista_t *eventos)
 {
   FILE *arq;
@@ -323,32 +326,6 @@ void get_qualifications(char *filename, lista_t *eventos)
   fclose(arq);
 }
 
-/* Funcao para printar vetor de autores */
-void author_summary(int periodicos[], int conferencias[], char **lattesnames, int num)
-{
-  int i;
-  for (i = 0; i < num; i++)
-  {
-    printf("\n");
-    printf("Pesquisador: %s \n", lattesnames[i]);
-    printf("+--------------------------------+ \n");
-    printf("|    Periodiocos  Conferencias   | \n");
-    printf("+--------------------------------+ \n");
-    printf("| A1:     %d           %d          |\n", periodicos[0 + i * 10], conferencias[0 + i * 10]);
-    printf("| A2:     %d           %d          |\n", periodicos[1 + i * 10], conferencias[1 + i * 10]);
-    printf("| A3:     %d           %d          |\n", periodicos[2 + i * 10], conferencias[2 + i * 10]);
-    printf("| A4:     %d           %d          |\n", periodicos[3 + i * 10], conferencias[3 + i * 10]);
-    printf("| B1:     %d           %d          |\n", periodicos[4 + i * 10], conferencias[4 + i * 10]);
-    printf("| B2:     %d           %d          |\n", periodicos[5 + i * 10], conferencias[5 + i * 10]);
-    printf("| B3:     %d           %d          |\n", periodicos[6 + i * 10], conferencias[6 + i * 10]);
-    printf("| B4:     %d           %d          |\n", periodicos[7 + i * 10], conferencias[7 + i * 10]);
-    printf("|  C:     %d           %d          |\n", periodicos[8 + i * 10], conferencias[8 + i * 10]);
-    printf("+--------------------------------+\n");
-    printf("\n");
-  }
-  return;
-}
-
 /* Apenas uma funcao para organizar*/
 void display_menu()
 {
@@ -361,7 +338,9 @@ void display_menu()
   printf("4) Apresentar a produção sumarizada do grupo por ano discriminando os estratos; Em periódicos; Em conferências.\n");
   printf("5) Listar aqueles periódicos e eventos classificados no nível C.\n");
   printf("6) Listar os periódicos e eventos não classificados.\n");
+  printf("7) Plotar grafico de barras.\n");
   printf("Opcao: ");
 
   return;
 }
+
