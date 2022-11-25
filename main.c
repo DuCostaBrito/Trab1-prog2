@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include "utils.h"
+#include "printFunctions.h"
 
 
 int main(int argc, char **argv)
@@ -52,8 +53,8 @@ int main(int argc, char **argv)
     get_all_events(filenames, authornames, num_files, Periodicos, Conferencias);
     
     printf("Colhetando todas as classificacoes...\n");
-    get_qualifications(cvalue, Conferencias);
-    get_qualifications(pvalue, Periodicos);
+    get_qualifications(cvalue, Conferencias, 7);
+    get_qualifications(pvalue, Periodicos, 3);
 
     display_menu();
     scanf(" %d", &option);
@@ -101,7 +102,6 @@ int main(int argc, char **argv)
         scanf(" %d", &option);
     }
 
-    printf("TOTAL: %d", Conferencias->size);
     free(Periodicos->nodes);
     free(Conferencias->nodes);
     free(Periodicos);

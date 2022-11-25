@@ -60,7 +60,6 @@ int estrato_index(char *quali)
     return 9;
 }
 
-
 /* Devolve o numero de arquivos contidos no diretorio*/
 int count_arqs(DIR *dirname)
 {
@@ -209,13 +208,14 @@ void get_data(char *string, char *lable, char *data, char **pointer)
 
 /*
 Compara o nome do evento com cada linha.
-Retorna a qualificacao se exite, ou "NC", caso nao exista. (POR REFERENCIA)
+Retorna a classificacao do nome mais similar encontrado
 */
-void comparing(FILE *arq, char *name, char *quali)
+void comparing(FILE *arq, char *name, char *quali, int error)
 {
   char line[LINESIZE];
   char ch;
-  int i;
+  int i, dist;
+  int minDist = -1;
 
   // Lendo cada linha
   ch = getc(arq);
@@ -233,22 +233,23 @@ void comparing(FILE *arq, char *name, char *quali)
 
     line[i - 3] = '\0'; // Deixando so o nome na linha
 
+    dist = levenshtein(line, name);
     // Comparando cada linha com o nome do evento
-    if (levenshtein(line, name) <= 10)
+    if ((minDist == -1) || (dist < minDist))
     {
-      /* Pegando a qualificacao */ 
+      /* Pegando a qualificacao */
       quali[0] = line[i - 2];
       quali[1] = line[i - 1];
       quali[2] = '\0';
-      strcpy(name, line);
-      rewind(arq); // Voltando o ponteiro para o inicio
-      return;
+      minDist = dist;
     }
-
     ch = getc(arq);
   }
+
+  if (minDist > error)
+    strcpy(quali, "NC");  //Nao chegou a um conclusao definitiva
   rewind(arq); // Voltando o ponteiro para o inicio
-  return;      // NAO CONTEM
+  return;      
 }
 
 /* Insere todos os eventos na lista */
@@ -307,7 +308,7 @@ void get_all_events(char **filenames, char **lattesnames, int num_files, lista_t
 }
 
 /* Roda toda a lista de artigos, colhetando suas qualificacoes*/
-void get_qualifications(char *filename, lista_t *eventos)
+void get_qualifications(char *filename, lista_t *eventos, int error)
 {
   FILE *arq;
   int i;
@@ -318,8 +319,7 @@ void get_qualifications(char *filename, lista_t *eventos)
 
   for (i = 0; i < eventos->size; i++)
   {
-    strcpy(quali, "NC");
-    comparing(arq, eventos->nodes[i].name, quali);
+    comparing(arq, eventos->nodes[i].name, quali, error);
     index = estrato_index(quali);
     eventos->nodes[i].quali = index;
   }
@@ -343,4 +343,3 @@ void display_menu()
 
   return;
 }
-
