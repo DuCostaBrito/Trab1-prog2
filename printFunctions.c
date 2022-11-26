@@ -1,10 +1,5 @@
 #include "printFunctions.h"
 
-int compare(const void *a, const void *b)
-{
-    return (*(int *)a - *(int *)b);
-}
-
 char *return_quali(int i)
 {
     if (i == 0)
@@ -88,6 +83,8 @@ void print_years(lista_t *per, lista_t *conf)
     int anos[50];
     int len, i, j, achei;
     len = 0;
+    int aux;
+    int menor;
     int vetor[10];
     int vetor2[10];
     /* Adiciono todos os anos distintos presentes nas listas (per, conf)*/
@@ -125,8 +122,20 @@ void print_years(lista_t *per, lista_t *conf)
             len++;
         }
     }
-    /* Organizo o vetor com os anos*/
-    qsort(anos, len, sizeof(int), compare);
+    /* Organizo o vetor com os anos (Selection Sort)*/
+    for (i = 0; i < len - 1; i++)
+    {
+        menor = i;
+        for (j = i + 1; j < len; j++)
+            if (anos[j] < anos[menor])
+                menor = j;
+        if (menor != i)
+        {
+            aux = anos[i];
+            anos[i] = anos[menor];
+            anos[menor] = aux;
+        }
+    }
 
     /* Percorro por cada elemento do vetor (ano), e encontro artigos correspondentes*/
     for (i = 0; i < len; i++)
@@ -159,7 +168,7 @@ void print_years(lista_t *per, lista_t *conf)
         printf("|   B3: %d   |   B3: %d     |\n", vetor[6], vetor2[6]);
         printf("|   B4: %d   |   B4: %d     |\n", vetor[7], vetor2[7]);
         printf("|    C: %d   |    C: %d     |\n", vetor[8], vetor2[8]);
-        printf("+------------------------+\n");
+        printf("+--------------------------+\n");
         printf("\n\n");
     }
 }
@@ -251,6 +260,7 @@ void print_estrato(lista_t *l, int e)
 
 void plotGraph(lista_t *Periodicos, lista_t *Conferencias)
 {
+    /* Comandos para serem impressos em um arquivo separado*/
     char *commandsForGnuplot[] =
         {
             "set title \"Artigos publicados em Periodicos e Conferencias do grupo\"font \",13\"",
@@ -272,7 +282,8 @@ void plotGraph(lista_t *Periodicos, lista_t *Conferencias)
             "plot 'data.tmp' using 2:xtic(1) title \"Periodicos\" linecolor \"red\",  \
     'data.tmp' using 3 title \"Conferencias\" linecolor \"blue\""};
 
-    FILE *dataTmp = fopen("data.tmp", "w");
+    /* Arquivo que sera plotado*/
+    FILE *data_tmp = fopen("data.tmp", "w");
 
     FILE *gnuplotPipe = popen("gnuplot -persistent", "w");
 
@@ -285,16 +296,50 @@ void plotGraph(lista_t *Periodicos, lista_t *Conferencias)
         vetor2[i] = 0;
     }
 
+    /* Colhetando informacoes importantes */
     summary(Periodicos, vetor);
     summary(Conferencias, vetor2);
 
-    fprintf(dataTmp, "# %s %s\n", "Periodicos", "Conferencias");
+    /* Escrevendo nos arquivos*/
+    fprintf(data_tmp, "# %s %s\n", "Periodicos", "Conferencias");
     for (i = 0; i < 9; i++)
-        fprintf(dataTmp, "%s %d %d\n", return_quali(i), vetor[i], vetor2[i]);
+        fprintf(data_tmp, "%s %d %d\n", return_quali(i), vetor[i], vetor2[i]);
 
     for (i = 0; i < 17; i++)
         fprintf(gnuplotPipe, "%s \n", commandsForGnuplot[i]);
 
-    fclose(dataTmp);
+    fclose(data_tmp);
     pclose(gnuplotPipe);
+}
+
+/* Barra de progresso */
+void update_bar(int percent_done)
+{
+    int i;
+    int num_chars = percent_done * PROG_BAR_LENGTH / 100;
+    printf("\r[");
+    for (i = 0; i < num_chars; i++) 
+        printf("#");
+    for (i = 0; i < PROG_BAR_LENGTH - num_chars; i++) 
+        printf(" ");
+    printf("] %d%% Done", percent_done);
+    fflush(stdout);
+}
+
+/* Apenas uma funcao para organizar*/
+void display_menu()
+{
+  printf("\n");
+  printf("SELECIONE UMA DAS OPCOES\n");
+  printf("0) Encerrar o programa.\n");
+  printf("1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos.\n");
+  printf("2) Apresentar a produção sumarizada do grupo por ordem de conferências discriminando os estratos.\n");
+  printf("3) Apresentar a produção dos pesquisadores do grupo por ordem de autoria discriminando os estratos; Em periódicos. Em conferências.\n");
+  printf("4) Apresentar a produção sumarizada do grupo por ano discriminando os estratos; Em periódicos; Em conferências.\n");
+  printf("5) Listar aqueles periódicos e eventos classificados no nível C.\n");
+  printf("6) Listar os periódicos e eventos não classificados.\n");
+  printf("7) Plotar grafico de barras.\n");
+  printf("Opcao: ");
+
+  return;
 }

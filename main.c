@@ -1,6 +1,16 @@
+/* 
+Resumo do programa: 
+    Passo 1) Colhetar nome dos arquivos xml.
+    Passo 2) Loop entre os arquivos (foram armazenados em uma string).
+    Passo 3) Nesse loop colhetamos algumas informacoes dos artigos e as inserimos em 2 listas (periodicos e conferencias).
+    Passo 4) Iteramos pelas listas e comparamos cada nome individualmente com o arquivo de qualificacoes.
+    Passo 5) Agora temos todas as informacoes uteis e podemos apenas printar o que for pedido.
+*/
 #include <unistd.h>
 #include "utils.h"
 #include "printFunctions.h"
+#define MAX_DIST_PERIODICS 2
+#define MAX_DIST_EVENTS 9
 
 
 int main(int argc, char **argv)
@@ -52,9 +62,11 @@ int main(int argc, char **argv)
     /* Inserindo nas listas os eventos listados em todos os lattes */
     get_all_events(filenames, authornames, num_files, Periodicos, Conferencias);
     
-    printf("Colhetando todas as classificacoes...\n");
-    get_qualifications(cvalue, Conferencias, 7);
-    get_qualifications(pvalue, Periodicos, 3);
+    printf("Colhetando todas as classificacoes de Conferencias...\n");
+    update_bar(0);
+    get_qualifications(cvalue, Conferencias, MAX_DIST_EVENTS);
+    printf("\nColhetando todas as classificacoes de Periodicos...\n");
+    get_qualifications(pvalue, Periodicos, MAX_DIST_PERIODICS);
 
     display_menu();
     scanf(" %d", &option);
@@ -64,24 +76,28 @@ int main(int argc, char **argv)
             break;
         else if (option == 1)
         {
+            printf("\n");
             print_lista(Periodicos);
         }
         else if (option == 2)
         {
-            
+            printf("\n");   
             print_lista(Conferencias); 
         }
         else if (option == 3)
         {
+            printf("\n");  
             print_authors(Periodicos, Conferencias, authornames, num_files);
         }
 
         else if (option == 4)
         {
+            printf("\n");  
             print_years(Periodicos, Conferencias);
         }
         else if (option == 5)
         {
+            printf("\n");  
             printf("Periodicos: \n");
             print_estrato(Periodicos, 8);
             printf("Conferencias: \n");
@@ -89,6 +105,7 @@ int main(int argc, char **argv)
         }
         else if (option == 6)
         {
+            printf("\n");  
             printf("Periodicos: \n");
             print_estrato(Periodicos, 9);
             printf("Conferencias: \n");

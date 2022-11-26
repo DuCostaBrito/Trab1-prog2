@@ -24,6 +24,7 @@ int levenshtein(char *s1, char *s2)
   return column[s1len];
 }
 
+/* Funcao interna. Deixa toda a string em letra maiuscula*/
 void string_upper(char *str)
 {
   int i = 0;
@@ -210,12 +211,11 @@ void get_data(char *string, char *lable, char *data, char **pointer)
 Compara o nome do evento com cada linha.
 Retorna a classificacao do nome mais similar encontrado
 */
-void comparing(FILE *arq, char *name, char *quali, int error)
+void comparing(FILE *arq, char *name, char *quali, int max_dist)
 {
   char line[LINESIZE];
   char ch;
   int i, dist;
-  int minDist = -1;
 
   // Lendo cada linha
   ch = getc(arq);
@@ -235,24 +235,23 @@ void comparing(FILE *arq, char *name, char *quali, int error)
 
     dist = levenshtein(line, name);
     // Comparando cada linha com o nome do evento
-    if ((minDist == -1) || (dist < minDist))
+    if (dist <= max_dist)
     {
       /* Pegando a qualificacao */
       quali[0] = line[i - 2];
       quali[1] = line[i - 1];
       quali[2] = '\0';
-      minDist = dist;
+      strcpy(name, line);
+      rewind(arq);
+      return;
     }
     ch = getc(arq);
   }
-
-  if (minDist > error)
-    strcpy(quali, "NC");  //Nao chegou a um conclusao definitiva
   rewind(arq); // Voltando o ponteiro para o inicio
   return;      
 }
 
-/* Insere todos os eventos na lista */
+/* Insere todos os eventos de 1 unico lattes na lista */
 void get_lattes_events(char *string, int n, char *lable[], lista_t *estrato)
 {
   char date[5];        // Para guardar o ano
@@ -319,27 +318,15 @@ void get_qualifications(char *filename, lista_t *eventos, int error)
 
   for (i = 0; i < eventos->size; i++)
   {
+    strcpy(quali, "NC");
+    /* Procura no arquivo pela classificacao*/
     comparing(arq, eventos->nodes[i].name, quali, error);
     index = estrato_index(quali);
+    /* Insere a qualicificacao na lista*/
     eventos->nodes[i].quali = index;
+    /* Incrementa a barra de progresso*/
+    update_bar((i+1)*100 / eventos->size);
   }
   fclose(arq);
 }
 
-/* Apenas uma funcao para organizar*/
-void display_menu()
-{
-  printf("\n");
-  printf("SELECIONE UMA DAS OPCOES\n");
-  printf("0) Encerrar o programa.\n");
-  printf("1) Apresentar a produção sumarizada do grupo por ordem de periódicos discriminando os estratos.\n");
-  printf("2) Apresentar a produção sumarizada do grupo por ordem de conferências discriminando os estratos.\n");
-  printf("3) Apresentar a produção dos pesquisadores do grupo por ordem de autoria discriminando os estratos; Em periódicos. Em conferências.\n");
-  printf("4) Apresentar a produção sumarizada do grupo por ano discriminando os estratos; Em periódicos; Em conferências.\n");
-  printf("5) Listar aqueles periódicos e eventos classificados no nível C.\n");
-  printf("6) Listar os periódicos e eventos não classificados.\n");
-  printf("7) Plotar grafico de barras.\n");
-  printf("Opcao: ");
-
-  return;
-}
