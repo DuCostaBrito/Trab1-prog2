@@ -9,7 +9,7 @@ struct nodo_l {
     int author;  /* Nos diz quem eh o autor do artigo */
     int year;   /* Ano de publicacao */
     int quali; /* Classificacao */
-    char name[240]; /* Nome do evento */
+    char name[300]; /* Nome do evento */
     char flag;  /* sinaliza se ja foi contado. "0" ja foi contado, caso contrario "1" */
 };
 typedef struct nodo_l nodo_l_t;

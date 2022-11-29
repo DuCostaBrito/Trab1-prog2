@@ -9,7 +9,7 @@
 #include <dirent.h>
 #include <ctype.h>
 
-#define LINESIZE 240
+#define LINESIZE 300
 #define BLOCK 200
 #define MIN3(a, b, c) ((a) < (b) ? ((a) < (c) ? (a) : (c)) : ((b) < (c) ? (b) : (c)))
 

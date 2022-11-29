@@ -44,13 +44,19 @@ int main(int argc, char **argv)
         }
     }
 
-    /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
-    filenames = list_filename(dvalue, &num_files);
-    
+    /* Verificando se todos os parametros foram preenchidos*/
+    if (!cvalue || !dvalue || !pvalue)
+    {
+        printf("Por favor digite no formato: \"./lattes -d <nome do diretorio> -c <quali-conf> -p <quali-per>\"\n");
+        exit(1);
+    }
 
     /* Listas em que serao armazenados os artigos*/
     lista_t *Periodicos = lista_cria();
     lista_t *Conferencias = lista_cria();
+
+    /* Listando todos os nomes no diretorio "diretorio/xxxxxxx.xml" */
+    filenames = list_filename(dvalue, &num_files);
 
     /* Alocando memoria para vetor que contera o nome de cada pesquisador */
     authornames = malloc(sizeof(char *) * (num_files));

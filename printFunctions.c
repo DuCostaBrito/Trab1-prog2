@@ -263,7 +263,7 @@ void plotGraph(lista_t *Periodicos, lista_t *Conferencias)
     /* Comandos para serem impressos em um arquivo separado*/
     char *commandsForGnuplot[] =
         {
-            "set title \"Artigos publicados em Periodicos e Conferencias do grupo\"font \",13\"",
+            "set title \"Producoes publicados em Periodicos e Conferencias do grupo\"font \",13\"",
             "set yrange[0:]",
             "set mytics 2",
             "set style data histogram",
@@ -285,6 +285,7 @@ void plotGraph(lista_t *Periodicos, lista_t *Conferencias)
     /* Arquivo que sera plotado*/
     FILE *data_tmp = fopen("data.tmp", "w");
 
+    /* Assim o arquivo permanece aberto mesmo depois de acabar o programa*/
     FILE *gnuplotPipe = popen("gnuplot -persistent", "w");
 
     int i;
